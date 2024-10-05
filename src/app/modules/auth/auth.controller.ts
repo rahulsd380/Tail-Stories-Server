@@ -5,7 +5,8 @@ import catchAsync from "../../utils/catchAsync";
 import config from "../../config";
 
 const createUser = catchAsync(async (req, res) => {
-  const result = await AuthServices.createUser(req.body);
+  const file = req.file;
+  const result = await AuthServices.createUser(file, req.body);
 
   sendResponse(res, {
     statusCode: httpStatus.OK,

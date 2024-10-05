@@ -1,8 +1,14 @@
+import { User } from '../auth/auth.model';
+import { Posts } from '../posts/posts.model';
 import { TUser } from './users.interface';
-import { User } from './users.model';
 
 const getAllUser = async () => {
   const result = await User.find();
+  return result;
+};
+
+const getMyPosts = async (authorId: string) => {
+  const result = await Posts.findById(authorId);
   return result;
 };
 
@@ -59,4 +65,5 @@ export const UserServices = {
   deleteUser,
   changeUserRoleToAdmin,
   changeUserRoleToUser,
+  getMyPosts,
 };

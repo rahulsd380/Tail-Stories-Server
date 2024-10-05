@@ -15,8 +15,19 @@ const getAllUser = catchAsync(async (req, res) => {
 });
 
 const getMe = catchAsync(async (req, res) => {
+  const authorId = req.user.userId;
+  const result = await UserServices.getMe(authorId);
+  sendResponse(res, {
+    statusCode: httpStatus.OK,
+    success: true,
+    message: 'User profile retrieved successfully',
+    data: result,
+  });
+});
+
+const getMyPosts = catchAsync(async (req, res) => {
   const userId = req.user.userId;
-  const result = await UserServices.getMe(userId);
+  const result = await UserServices.getMyPosts(userId);
   sendResponse(res, {
     statusCode: httpStatus.OK,
     success: true,
@@ -87,4 +98,5 @@ export const UserControllers = {
   deleteUser,
   changeUserRoleToAdmin,
   changeUserRoleToUser,
+  getMyPosts,
 };

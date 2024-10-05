@@ -8,7 +8,7 @@ const socialMediaLinkSchema = new Schema({
   url: { type: String },
 });
 
-const userSchema = new Schema(
+const userSchema = new Schema<TUser, UserModel>(
   {
     name: {
       type: String,

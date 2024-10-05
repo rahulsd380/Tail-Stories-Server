@@ -1,58 +1,56 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import httpStatus from "http-status";
 import { TLoginAuth, TUser } from "./auth.interface";
-import { User } from "../users/users.model";
 import AppError from "../../errors/AppError";
 import jwt, { JwtPayload } from "jsonwebtoken";
 import config from "../../config";
 import { createToekn } from "./auth.utils";
+import { sendImageToCloudinary } from "../../utils/sendImageToCloudinary";
+import { User } from "./auth.model";
 
 // Create user route
-const createUser = async (payload: Partial<TUser>) => {
-  const {
-    name,
-    userName,
-    email,
-    password,
-    dateOfBirth,
-    profilePicture,
-    phoneNumber,
-    gender,
-    bio,
-    location,
-    website,
-    occupation,
-    socialMediaLinks,
-  } = payload;
-  console.log(payload);
+const createUser = async (file: any, payload: Partial<TUser>) => {
 
-  // Check if user already exists
-  const isUserExists = await User.findOne({ email });
+ // checking if the file is there or not
+  if (file && file.path) {
+    const imageName = `${payload?.name}-${payload?.email}`;
+    const path = file.path;
+
+    // Upload the image to Cloudinary
+    const { secure_url } = await sendImageToCloudinary(imageName, path);
+    payload.profilePicture = secure_url;
+  }
+
+  const payloadData = {
+    name: payload?.name || "",
+    email: payload?.email || "",
+    password: payload?.password || "",
+    userName: payload?.userName || "Anonymous",
+    dateOfBirth: payload?.dateOfBirth || null,
+    profilePicture: payload?.profilePicture || "",
+    phoneNumber: payload?.phoneNumber || "",
+    gender: payload?.gender || "",
+    bio: payload?.bio || "",
+    location: payload?.location || "",
+    website: payload?.website || "",
+    occupation: payload?.occupation || "",
+    socialMediaLinks: payload?.socialMediaLinks || [],
+    role: "user",
+  };
+
+
+  // Checking if user already exists
+  const isUserExists = await User.findOne({ email: payloadData.email });
   if (isUserExists) {
     throw new AppError(httpStatus.CONFLICT, "User already exists.");
   }
-
-  // Prepare payload with only necessary fields from the input
-  const payloadData = {
-    name: name || "",
-    email: email || "",
-    password: password || "",
-    userName: userName || "",
-    dateOfBirth: dateOfBirth || null,
-    profilePicture: profilePicture || "",
-    phoneNumber: phoneNumber || "",
-    gender: gender || "",
-    bio: bio || "",
-    location: location || "",
-    website: website || "",
-    occupation: occupation || "",
-    socialMediaLinks: socialMediaLinks || [],
-    role: "user",
-  };
 
   // Create user in the database
   const result = await User.create(payloadData);
   return result;
 };
+
+
 
 
 

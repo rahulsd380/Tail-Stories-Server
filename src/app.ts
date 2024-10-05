@@ -14,8 +14,7 @@ app.use(cookieParser());
 app.use(express.json());
 
 // Middleware for handling CORS with credentials
-app.use(cors());
-// app.use(cors({ origin: ['https://orbit-rides.vercel.app'], credentials: true }));
+app.use(cors({ origin: ['http://localhost:3000'], credentials: true }));
 
 // Root route
 app.get('/', (req, res) => {
