@@ -6,15 +6,30 @@ export type TLoginAuth = {
 import { Model } from "mongoose";
 import { UserRole } from "./auth.constannts";
 
+export interface SocialMediaLink {
+  platform: string;
+  url: string;
+}
+
 export interface TUser {
   _id: string;
   name: string;
+  userName: string;
   email: string;
   password: string;
-  phone: string;
-  address: string;
+  dateOfBirth: Date;
+  profilePicture?: string;
+  phoneNumber: string;
+  gender?: "male" | "female" | "prefer not to say";
+  bio?: string;
+  location?: string;
+  website?: string;
+  occupation?: string;
+  socialMediaLinks?: SocialMediaLink[];
   role: "admin" | "user";
 }
+
+
 
 export interface UserModel extends Model<TUser> {
   isUserExists(email: string): Promise<TUser>;

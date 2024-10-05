@@ -3,23 +3,47 @@ import bcrypt from "bcrypt";
 import config from "../../config";
 import { TUser, UserModel } from "./auth.interface";
 
-const userSchema = new Schema<TUser>({
-  name: {
-    type: String,
-    required: [true, "Name is required"],
-  },
-  email: { type: String, required: true, unique: true },
-  password: { type: String, required: true },
-  phone: { type: String },
-  address: { type: String },
-  role: {
-    type: String,
-    enum: ["admin", "user"],
-    default: "user",
-  },
-}, {
-  timestamps: true,
+const socialMediaLinkSchema = new Schema({
+  platform: { type: String },
+  url: { type: String },
 });
+
+const userSchema = new Schema(
+  {
+    name: {
+      type: String,
+      required: [true, "Name is required"],
+    },
+    userName: { type: String, default: "" },
+    email: { type: String, required: true, unique: true },
+    password: { type: String, required: true },
+    dateOfBirth: { type: Date, default: null },
+    profilePicture: { type: String, default: "" },
+    phoneNumber: { type: String, default: "" },
+    gender: {
+      type: String,
+      enum: ["male", "female", "prefer not to say"],
+      default: "",
+    },
+    bio: { type: String, default: "" },
+    location: { type: String, default: "" },
+    website: { type: String, default: "" },
+    occupation: { type: String, default: "" },
+    socialMediaLinks: {
+      type: [socialMediaLinkSchema],
+      default: [],
+    },
+    role: {
+      type: String,
+      enum: ["admin", "user"],
+      default: "user",
+    },
+  },
+  {
+    timestamps: true,
+  }
+);
+
 
 userSchema.pre("save", async function (next) {
   this.password = await bcrypt.hash(

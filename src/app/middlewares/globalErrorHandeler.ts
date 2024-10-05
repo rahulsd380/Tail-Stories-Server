@@ -9,7 +9,7 @@ import AppError from "../errors/AppError";
 
 
 
-const globalErrorHabdeler : ErrorRequestHandler = (err, req, res, next) => {
+const globalErrorHandler : ErrorRequestHandler = (err, req, res, next) => {
     let statusCode = 500;
     let message ="Something went wrong!";
 
@@ -61,4 +61,4 @@ const globalErrorHabdeler : ErrorRequestHandler = (err, req, res, next) => {
     })
    }
 
-   export default globalErrorHabdeler;
+   export default globalErrorHandler;

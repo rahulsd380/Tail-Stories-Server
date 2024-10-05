@@ -1,34 +1,60 @@
 import httpStatus from "http-status";
-import { TLoginAuth } from "./auth.interface";
+import { TLoginAuth, TUser } from "./auth.interface";
 import { User } from "../users/users.model";
 import AppError from "../../errors/AppError";
 import jwt, { JwtPayload } from "jsonwebtoken";
 import config from "../../config";
-import { TUser } from "../users/users.interface";
 import { createToekn } from "./auth.utils";
 
 // Create user route
-const createUser = async (payload: TUser) => {
-  const {name, email, address, phone, password} = payload;
+const createUser = async (payload: Partial<TUser>) => {
+  const {
+    name,
+    userName,
+    email,
+    password,
+    dateOfBirth,
+    profilePicture,
+    phoneNumber,
+    gender,
+    bio,
+    location,
+    website,
+    occupation,
+    socialMediaLinks,
+  } = payload;
+  console.log(payload);
 
+  // Check if user already exists
   const isUserExists = await User.findOne({ email });
   if (isUserExists) {
     throw new AppError(httpStatus.CONFLICT, "User already exists.");
   }
 
+  // Prepare payload with only necessary fields from the input
   const payloadData = {
-    name : name || "",
-    email : email || "",
-    address : address || "",
-    phone : phone || "",
-    password : password || "",
-    role : "user",
-  }
+    name: name || "",
+    email: email || "",
+    password: password || "",
+    userName: userName || "",
+    dateOfBirth: dateOfBirth || null,
+    profilePicture: profilePicture || "",
+    phoneNumber: phoneNumber || "",
+    gender: gender || "",
+    bio: bio || "",
+    location: location || "",
+    website: website || "",
+    occupation: occupation || "",
+    socialMediaLinks: socialMediaLinks || [],
+    role: "user",
+  };
 
-  console.log(payloadData);
+  // Create user in the database
   const result = await User.create(payloadData);
   return result;
 };
+
+
 
 // Login
 const loginUser = async (payload: TLoginAuth) => {
@@ -80,6 +106,12 @@ const loginUser = async (payload: TLoginAuth) => {
   return {
     accessToken,
     refreshToekn,
+    user: {
+      _id: user._id,
+      name: user.name,
+      email: user.email,
+      role: user.role,
+    },
   };
 };
 

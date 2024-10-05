@@ -3,7 +3,7 @@ import cors from 'cors';
 import router from './app/routes';
 import cookieParser from 'cookie-parser';
 import notFoundHandler from './app/middlewares/notFoundHandeler';
-import globalErrorHabdeler from './app/middlewares/globalErrorHandeler';
+import globalErrorHandler from './app/middlewares/globalErrorHandeler';
 
 const app = express();
 
@@ -14,20 +14,21 @@ app.use(cookieParser());
 app.use(express.json());
 
 // Middleware for handling CORS with credentials
-app.use(cors({ origin: ['https://orbit-rides.vercel.app'], credentials: true }));
+app.use(cors());
+// app.use(cors({ origin: ['https://orbit-rides.vercel.app'], credentials: true }));
 
 // Root route
 app.get('/', (req, res) => {
-  res.send("Welcome to bike rental");
+  res.send("Welcome to Tail Stories");
 });
 
 // Application routes
-app.use('/api', router);
+app.use('/api/v1', router);
 
 // Catch-all route for handling 404 errors
 app.use(notFoundHandler);
 
 // Global error handling middleware
-app.use(globalErrorHabdeler);
+app.use(globalErrorHandler);
 
 export default app;
