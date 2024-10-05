@@ -8,7 +8,7 @@ const getAllUser = async () => {
 };
 
 const getMyPosts = async (authorId: string) => {
-  const result = await Posts.findById(authorId);
+  const result = await Posts.find({authorId});
   return result;
 };
 

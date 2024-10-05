@@ -26,8 +26,9 @@ const getMe = catchAsync(async (req, res) => {
 });
 
 const getMyPosts = catchAsync(async (req, res) => {
-  const userId = req.user.userId;
-  const result = await UserServices.getMyPosts(userId);
+  const {authorId} = req.params;
+  console.log(authorId);
+  const result = await UserServices.getMyPosts(authorId);
   sendResponse(res, {
     statusCode: httpStatus.OK,
     success: true,
