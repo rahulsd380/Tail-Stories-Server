@@ -1,6 +1,6 @@
 import express, { NextFunction, Request, Response } from "express";
-import auth from "../../middlewares/auth";
-import { UserRole } from "../auth/auth.constannts";
+// import auth from "../../middlewares/auth";
+// import { UserRole } from "../auth/auth.constannts";
 import { PostControllers } from "./posts.controller";
 import { upload } from "../../utils/sendImageToCloudinary";
 
@@ -16,9 +16,12 @@ router.post(
   PostControllers.createPost
 );
 
-router.get("/", auth(UserRole.admin), PostControllers.getAllPosts);
+router.get("/", PostControllers.getAllPosts);
 router.put("/:id", PostControllers.updatePost);
 router.delete("/:id", PostControllers.deletePost);
 router.get("/:postId", PostControllers.getSinglePostById);
+router.post("/:postId/upvote", PostControllers.upvotePost);
+router.post("/:postId/downvote", PostControllers.downvotePost);
+router.post('/:postId/comment', PostControllers.addComment);
 
 export const postRoutes = router;

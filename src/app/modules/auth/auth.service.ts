@@ -29,12 +29,13 @@ const createUser = async (file: any, payload: Partial<TUser>) => {
     dateOfBirth: payload?.dateOfBirth || null,
     profilePicture: payload?.profilePicture || "",
     phoneNumber: payload?.phoneNumber || "",
-    gender: payload?.gender || "",
+    gender: payload?.gender || "male",
     bio: payload?.bio || "",
     location: payload?.location || "",
     website: payload?.website || "",
     occupation: payload?.occupation || "",
     socialMediaLinks: payload?.socialMediaLinks || [],
+    followers : payload?.followers || 0,
     role: "user",
   };
 
@@ -93,7 +94,7 @@ const loginUser = async (payload: TLoginAuth) => {
     config.jwt_access_expires_in as string
   );
 
-  const refreshToekn = createToekn(
+  const refreshToken = createToekn(
     jwtPayload,
     config.jwt_refresh_secret as string,
     config.jwt_refresh_expires_in as string
@@ -103,7 +104,7 @@ const loginUser = async (payload: TLoginAuth) => {
 
   return {
     accessToken,
-    refreshToekn,
+    refreshToken,
     user: {
       _id: user._id,
       name: user.name,

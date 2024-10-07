@@ -22,7 +22,7 @@ const userSchema = new Schema<TUser, UserModel>(
     phoneNumber: { type: String, default: "" },
     gender: {
       type: String,
-      enum: ["male", "female", "prefer not to say"],
+      enum: ["male", "female", "other"],
       default: "",
     },
     bio: { type: String, default: "" },
@@ -33,6 +33,7 @@ const userSchema = new Schema<TUser, UserModel>(
       type: [socialMediaLinkSchema],
       default: [],
     },
+    followers : {type : Number, default: 0},
     role: {
       type: String,
       enum: ["admin", "user"],

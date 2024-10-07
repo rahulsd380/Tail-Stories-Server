@@ -17,6 +17,7 @@ const createPost = catchAsync(async (req, res) => {
 });
 
 const getAllPosts = catchAsync(async (req, res) => {
+  console.log(req.cookies);
   const result = await PostServices.getAllPosts();
 
   if (result.length === 0 || result.length === undefined) {
@@ -73,10 +74,58 @@ const deletePost = catchAsync(async (req, res) => {
   });
 });
 
+// Upvote
+const upvotePost = catchAsync(async (req, res) => {
+  const { postId } = req.params;
+  const { userId } = req.body;
+  const result = await PostServices.upvotePost(postId, userId);
+
+  sendResponse(res, {
+    statusCode: httpStatus.OK,
+    success: true,
+    message: 'Post upvoted successfully',
+    data: result,
+  });
+});
+
+
+// Downvote
+const downvotePost = catchAsync(async (req, res) => {
+  const { postId } = req.params;
+  const { userId } = req.body;
+
+  const result = await PostServices.downvotePost(postId, userId);
+
+  sendResponse(res, {
+    statusCode: httpStatus.OK,
+    success: true,
+    message: 'Post downvoted successfully',
+    data: result,
+  });
+});
+
+// Comment
+const addComment = catchAsync(async (req, res) => {
+  const { postId } = req.params;
+  const { authorId, comment } = req.body;
+  console.log(req.body);
+  const result = await PostServices.addComment(postId, authorId, comment);
+
+  sendResponse(res, {
+    statusCode: httpStatus.OK,
+    success: true,
+    message: 'Comment added successfully',
+    data: result,
+  });
+});
+
 export const PostControllers = {
   createPost,
   getAllPosts,
   getSinglePostById,
   updatePost,
   deletePost,
+  upvotePost,
+  downvotePost,
+  addComment,
 };

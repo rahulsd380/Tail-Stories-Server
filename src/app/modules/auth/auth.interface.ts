@@ -20,12 +20,13 @@ export interface TUser {
   dateOfBirth: Date;
   profilePicture?: string;
   phoneNumber: string;
-  gender?: "male" | "female" | "prefer not to say";
+  gender?: "male" | "female" | "other";
   bio?: string;
   location?: string;
   website?: string;
   occupation?: string;
   socialMediaLinks?: SocialMediaLink[];
+  followers: number;
   role: "admin" | "user";
 }
 
