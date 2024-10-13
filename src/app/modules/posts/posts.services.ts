@@ -6,7 +6,7 @@ import { TComment, TPost } from "./posts.interface";
 import { Posts } from "./posts.model";
 
 const createPost = async (payload: TPost, files: any[]) => {
-  const { title, body, category } = payload;
+  const { title, body, category, contentType } = payload;
 
   let imageUrls: string[] = [];
 
@@ -29,7 +29,7 @@ const createPost = async (payload: TPost, files: any[]) => {
     downvotes: [],
     comments: [],
     category: category || "",
-    contentType: "free",
+    contentType: contentType || "free",
     status: 'published',
     createdAt: new Date(),
     authorId: payload.authorId,
@@ -41,6 +41,11 @@ const createPost = async (payload: TPost, files: any[]) => {
 
 const getAllPosts = async () => {
   const result = await Posts.find();
+  return result;
+};
+
+const getMostUpvotedPost = async () => {
+  const result = await Posts.find().sort({ "upvotes.length": -1 });
   return result;
 };
 
@@ -143,6 +148,59 @@ const addComment = async (
   return post;
 };
 
+const editComment = async (commentId: string, payload: Partial<TComment>) => {
+  // Step 1: Fetch the post containing the comment
+  const post = await Posts.findById(payload.postId);
+  
+  // Step 2: Check if post exists
+  if (!post) {
+    throw new AppError(httpStatus.NOT_FOUND, 'Post not found');
+  }
+
+  // Step 3: Find the comment in the comments array
+  const commentIndex = post.comments.findIndex(comment => comment._id.toString() === commentId);
+
+  // Step 4: Check if the comment exists
+  if (commentIndex === -1) {
+    throw new AppError(httpStatus.NOT_FOUND, 'Comment not found');
+  }
+
+  // Step 5: Update the comment's fields based on the provided payload
+  const commentToUpdate = post.comments[commentIndex];
+  
+  if (payload.comment !== undefined) {
+    commentToUpdate.comment = payload.comment; // Update the comment text if provided
+  }
+  
+  if (payload.likes !== undefined) {
+    commentToUpdate.likes = payload.likes; // Update the likes count if provided
+  }
+
+  // Step 6: Save the updated post with the modified comment
+  await post.save();
+
+  return post; // Return the updated post
+};
+
+const deleteComment = async (postId: string, commentId: string) => {
+  const post = await Posts.findById(postId);
+  if (!post) {
+    throw new AppError(httpStatus.NOT_FOUND, 'Post not found');
+  }
+
+  // Find the index of the comment to delete
+  const commentIndex = post.comments.findIndex(comment => comment._id.toString() === commentId);
+  if (commentIndex === -1) {
+    throw new AppError(httpStatus.NOT_FOUND, 'Comment not found');
+  }
+
+  // Remove the comment from the comments array
+  post.comments.splice(commentIndex, 1);
+  await post.save();
+
+  return post; // Return the updated post
+};
+
 
 
 export const PostServices = {
@@ -153,5 +211,8 @@ export const PostServices = {
   deletePost,
   upvotePost,
   downvotePost,
-  addComment
+  addComment,
+  editComment,
+  getMostUpvotedPost,
+  deleteComment,
 };

@@ -35,7 +35,8 @@ const createUser = async (file: any, payload: Partial<TUser>) => {
     website: payload?.website || "",
     occupation: payload?.occupation || "",
     socialMediaLinks: payload?.socialMediaLinks || [],
-    followers : payload?.followers || 0,
+    followers : payload?.followers || [],
+    following : payload?.following || [],
     role: "user",
   };
 
@@ -86,8 +87,6 @@ const loginUser = async (payload: TLoginAuth) => {
     role: user.role,
   };
 
-  console.log(jwtPayload);
-
   const accessToken = createToekn(
     jwtPayload,
     config.jwt_access_secret as string,
@@ -132,7 +131,6 @@ const refreshToken = async (token: string) => {
   const { email } = decoded;
 
   const user = await User.isUserExists(email);
-  console.log(user);
 
   // Checking if the user exists or not
   if (!user) {

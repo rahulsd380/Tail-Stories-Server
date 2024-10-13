@@ -18,10 +18,14 @@ router.post(
 
 router.get("/", PostControllers.getAllPosts);
 router.put("/:id", PostControllers.updatePost);
+router.put("/edit-comment/:commentId", PostControllers.editComment);
 router.delete("/:id", PostControllers.deletePost);
 router.get("/:postId", PostControllers.getSinglePostById);
 router.post("/:postId/upvote", PostControllers.upvotePost);
 router.post("/:postId/downvote", PostControllers.downvotePost);
 router.post('/:postId/comment', PostControllers.addComment);
+router.get("/most-upvoted", PostControllers.getMostUpvotedPost);
+router.delete("/:postId/comment/:commentId", PostControllers.deleteComment);
+
 
 export const postRoutes = router;

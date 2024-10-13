@@ -4,7 +4,6 @@ import catchAsync from '../../utils/catchAsync';
 import { PostServices } from './posts.services';
 
 const createPost = catchAsync(async (req, res) => {
-  console.log(req.files);
   const files = req.files;
   const result = await PostServices.createPost(req.body, files);
 
@@ -16,8 +15,27 @@ const createPost = catchAsync(async (req, res) => {
   });
 });
 
+const getMostUpvotedPost = catchAsync(async (req, res) => {
+  const result = await PostServices.getMostUpvotedPost();
+
+  if (!result) {
+    return sendResponse(res, {
+      statusCode: httpStatus.OK,
+      success: false,
+      message: 'No posts found.',
+      data: null,
+    });
+  }
+
+  sendResponse(res, {
+    statusCode: httpStatus.OK,
+    success: true,
+    message: 'Most upvoted post retrieved successfully',
+    data: result,
+  });
+});
+
 const getAllPosts = catchAsync(async (req, res) => {
-  console.log(req.cookies);
   const result = await PostServices.getAllPosts();
 
   if (result.length === 0 || result.length === undefined) {
@@ -108,7 +126,6 @@ const downvotePost = catchAsync(async (req, res) => {
 const addComment = catchAsync(async (req, res) => {
   const { postId } = req.params;
   const { authorId, comment } = req.body;
-  console.log(req.body);
   const result = await PostServices.addComment(postId, authorId, comment);
 
   sendResponse(res, {
@@ -119,6 +136,32 @@ const addComment = catchAsync(async (req, res) => {
   });
 });
 
+const editComment = catchAsync(async (req, res) => {
+  // const userId = req.user.userId;
+  const { commentId } = req.params;
+  const result = await PostServices.editComment(commentId, req.body);
+
+  sendResponse(res, {
+    statusCode: httpStatus.OK,
+    success: true,
+    message: 'Comment updated successfully',
+    data: result,
+  });
+});
+
+const deleteComment = catchAsync(async (req, res) => {
+  const { postId, commentId } = req.params;
+  const result = await PostServices.deleteComment(postId, commentId);
+
+  sendResponse(res, {
+    statusCode: httpStatus.OK,
+    success: true,
+    message: 'Comment deleted successfully',
+    data: result,
+  });
+});
+
+
 export const PostControllers = {
   createPost,
   getAllPosts,
@@ -128,4 +171,7 @@ export const PostControllers = {
   upvotePost,
   downvotePost,
   addComment,
+  editComment,
+  getMostUpvotedPost,
+  deleteComment,
 };

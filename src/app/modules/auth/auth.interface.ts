@@ -26,9 +26,12 @@ export interface TUser {
   website?: string;
   occupation?: string;
   socialMediaLinks?: SocialMediaLink[];
-  followers: number;
+  followers: Array<string>;
+  following: Array<string>
   role: "admin" | "user";
+  isVerified: boolean;
 }
+
 
 
 

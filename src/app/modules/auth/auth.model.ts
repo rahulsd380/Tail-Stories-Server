@@ -15,6 +15,7 @@ const userSchema = new Schema<TUser, UserModel>(
       required: [true, "Name is required"],
     },
     userName: { type: String, default: "" },
+    isVerified: { type: Boolean, default: false },
     email: { type: String, required: true, unique: true },
     password: { type: String, required: true },
     dateOfBirth: { type: Date, default: null },
@@ -33,7 +34,8 @@ const userSchema = new Schema<TUser, UserModel>(
       type: [socialMediaLinkSchema],
       default: [],
     },
-    followers : {type : Number, default: 0},
+    followers: { type: [String], default: [] },
+  following: { type: [String], default: [] },
     role: {
       type: String,
       enum: ["admin", "user"],
@@ -44,6 +46,7 @@ const userSchema = new Schema<TUser, UserModel>(
     timestamps: true,
   }
 );
+
 
 
 userSchema.pre("save", async function (next) {
