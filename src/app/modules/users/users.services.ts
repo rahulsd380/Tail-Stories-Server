@@ -1,7 +1,8 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { sendImageToCloudinary } from '../../utils/sendImageToCloudinary';
+import { TUser } from '../auth/auth.interface';
 import { User } from '../auth/auth.model';
 import { Posts } from '../posts/posts.model';
-import { TUser } from './users.interface';
 
 const getAllUser = async () => {
   const result = await User.find();

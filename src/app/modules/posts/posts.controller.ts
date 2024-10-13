@@ -4,8 +4,8 @@ import catchAsync from '../../utils/catchAsync';
 import { PostServices } from './posts.services';
 
 const createPost = catchAsync(async (req, res) => {
-  const files = req.files;
-  const result = await PostServices.createPost(req.body, files);
+  const files = Array.isArray(req.files) ? req.files : [];
+    const result = await PostServices.createPost(req.body, files);
 
   sendResponse(res, {
     statusCode: httpStatus.OK,

@@ -5,6 +5,7 @@ export type TVote = {
 };
 
 export type TComment = {
+  _id?:string;
   authorId: string;
   commentedAt: Date;
   comment: string;

@@ -8,7 +8,7 @@ import { Posts } from "./posts.model";
 const createPost = async (payload: TPost, files: any[]) => {
   const { title, body, category, contentType } = payload;
 
-  let imageUrls: string[] = [];
+  const imageUrls: string[] = [];
 
   // If files are provided, upload them to Cloudinary
   if (files && files.length > 0) {
@@ -148,7 +148,7 @@ const addComment = async (
   return post;
 };
 
-const editComment = async (commentId: string, payload: Partial<TComment>) => {
+const editComment = async (commentId: string, payload: Partial<Omit<TComment, 'postId'> & { postId: string }>) => {
   // Step 1: Fetch the post containing the comment
   const post = await Posts.findById(payload.postId);
   
@@ -158,7 +158,7 @@ const editComment = async (commentId: string, payload: Partial<TComment>) => {
   }
 
   // Step 3: Find the comment in the comments array
-  const commentIndex = post.comments.findIndex(comment => comment._id.toString() === commentId);
+  const commentIndex = post.comments.findIndex(comment => comment._id!.toString() === commentId);
 
   // Step 4: Check if the comment exists
   if (commentIndex === -1) {
@@ -189,7 +189,7 @@ const deleteComment = async (postId: string, commentId: string) => {
   }
 
   // Find the index of the comment to delete
-  const commentIndex = post.comments.findIndex(comment => comment._id.toString() === commentId);
+  const commentIndex = post.comments.findIndex(comment => comment._id!.toString() === commentId);
   if (commentIndex === -1) {
     throw new AppError(httpStatus.NOT_FOUND, 'Comment not found');
   }
