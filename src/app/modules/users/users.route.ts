@@ -18,7 +18,7 @@ upload.single("file"),
   },
 UserControllers.updateProfile);
 router.delete('/delete-user/:userId', auth('admin'), UserControllers.deleteUser);
-router.put('/change-role/:userId', auth('admin'),  UserControllers.changeUserRoleToAdmin);
+router.put('/make-admin/:userId', auth('admin'),  UserControllers.changeUserRoleToAdmin);
 router.put('/make-user/:userId', auth('admin'),  UserControllers.changeUserRoleToUser);
 
 router.put('/follow/:userId', auth('user', 'admin'), UserControllers.followUser);

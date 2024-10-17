@@ -3,6 +3,17 @@ import catchAsync from "../../utils/catchAsync";
 import sendResponse from "../../utils/sendResponse";
 import { PaymentServices } from "./payment.service";
 
+const getAllPaymentHistories = catchAsync(async (req, res) => {
+  const result = await PaymentServices.getAllPaymentHistories();
+
+  sendResponse(res, {
+    statusCode: httpStatus.OK,
+    success: true,
+    message: "Payment retrived successfully",
+    data: result,
+  });
+});
+
 const payment = catchAsync(async (req, res) => {
   const result = await PaymentServices.payment(req.body);
 
@@ -24,4 +35,5 @@ const paymentConfirmationMessage = catchAsync(async (req, res) => {
 export const PaymentControllers = {
   payment,
   paymentConfirmationMessage,
+  getAllPaymentHistories,
 };

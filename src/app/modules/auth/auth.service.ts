@@ -7,6 +7,8 @@ import config from "../../config";
 import { createToekn } from "./auth.utils";
 import { sendImageToCloudinary } from "../../utils/sendImageToCloudinary";
 import { User } from "./auth.model";
+import { sendEmail } from "../../utils/sendEmail";
+import bcrypt from 'bcrypt';
 
 // Create user route
 const createUser = async (file: any, payload: Partial<TUser>) => {
@@ -51,9 +53,6 @@ const createUser = async (file: any, payload: Partial<TUser>) => {
   const result = await User.create(payloadData);
   return result;
 };
-
-
-
 
 
 // Login
@@ -159,8 +158,76 @@ const refreshToken = async (token: string) => {
   }
 };
 
+const forgetPassword = async (email: string) => {
+
+  const user = await User.isUserExists(email);
+
+  // Checking if the user exists or not
+  if (!user) {
+    throw new AppError(httpStatus.NOT_FOUND, "User not found!");
+  };
+
+  const jwtpayload = {
+    userId : user._id,
+    email: user.email,
+    role: user.role,
+  };
+
+  const resetToken = createToekn(
+    jwtpayload,
+    config.jwt_access_secret as string,
+   '10m'
+  );
+
+ const resetLink = `${config.reset_password_ui_url}?email=${user.email}&token=${resetToken}`;
+
+ sendEmail(user.email, resetLink);
+ console.log(resetLink);
+};
+
+const resetPassword = async (payload:{email:string, newPassword:string}, token:string) => {
+
+  const user = await User.isUserExists(payload?.email);
+
+  // Checking if the user exists or not
+  if (!user) {
+    throw new AppError(httpStatus.NOT_FOUND, "User not found!");
+  };
+
+  // Check if the token is valid or not.
+  const decoded = jwt.verify(
+    token,
+    config.jwt_access_secret as string
+  ) as JwtPayload;
+
+  console.log(decoded);
+
+  if(payload?.email !== decoded?.email){
+    throw new AppError(httpStatus.FORBIDDEN, "You are forbidden");
+  };
+
+  const newHashedPassword = await bcrypt.hash(
+    payload.newPassword,
+    Number(config.bcrypt_salt_round)
+  );
+
+  await User.findOneAndUpdate(
+    {
+      email:decoded.email,
+      role:decoded.role,
+    },
+    {
+      password:newHashedPassword,
+      passwordChangedAt : new Date(),
+    }
+
+  )
+};
+
 export const AuthServices = {
   createUser,
   loginUser,
   refreshToken,
+  forgetPassword,
+  resetPassword,
 };

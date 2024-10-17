@@ -1,8 +1,16 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import { User } from "../auth/auth.model";
 import { TPayment } from "./payment.interface";
 import Payment from "./payment.model";
 import { initiatePayment, verifypayment } from "./payment.utils";
 
+// Get all payments
+const getAllPaymentHistories = async () => {
+  const result = await Payment.find();
+  return result;
+}
+
+// Make payment
 const payment = async (payload: TPayment) => {
   const transactionId = `TNX-${Date.now()}-${payload.email}`;
 
@@ -31,6 +39,7 @@ const payment = async (payload: TPayment) => {
   return paymentSession;
 };
 
+// Payment confirmation message
 const paymentConfirmation = async (transactionId: string, status: string) => {
   const verifyResponse = await verifypayment(transactionId);
   console.log(verifyResponse);
@@ -51,4 +60,5 @@ const paymentConfirmation = async (transactionId: string, status: string) => {
 export const PaymentServices = {
   payment,
   paymentConfirmation,
+  getAllPaymentHistories,
 };
