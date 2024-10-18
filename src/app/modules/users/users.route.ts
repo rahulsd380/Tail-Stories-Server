@@ -12,7 +12,7 @@ router.get('/me', auth('user', 'admin'), UserControllers.getMe);
 router.get('/:userId',auth('user', 'admin'), UserControllers.getSingleUserById);
 router.get('/my-posts/:authorId', auth('user', 'admin'), UserControllers.getMyPosts);
 
-router.put('/me',
+router.put('/me', auth('user', 'admin'),
   multerUpload.single("file"),
   (req: Request, res: Response, next: NextFunction) => {
     if(req?.body?.data){
