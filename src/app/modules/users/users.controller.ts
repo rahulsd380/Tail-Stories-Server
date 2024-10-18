@@ -38,7 +38,8 @@ const getMyPosts = catchAsync(async (req, res) => {
 
 const updateProfile = catchAsync(async (req, res) => {
   const profilePic = req.file;
-  const userId = req.user.userId;
+  const userId = req?.user?.userId;
+  console.log(userId);
   const result = await UserServices.updateProfile(userId, req.body, profilePic);
 
   sendResponse(res, {
