@@ -19,7 +19,7 @@ router.put('/me', (0, auth_1.default)('user', 'admin'), sendImageToCloudinary_1.
     next();
 }, users_controller_1.UserControllers.updateProfile);
 router.delete('/delete-user/:userId', (0, auth_1.default)('admin'), users_controller_1.UserControllers.deleteUser);
-router.put('/change-role/:userId', (0, auth_1.default)('admin'), users_controller_1.UserControllers.changeUserRoleToAdmin);
+router.put('/make-admin/:userId', (0, auth_1.default)('admin'), users_controller_1.UserControllers.changeUserRoleToAdmin);
 router.put('/make-user/:userId', (0, auth_1.default)('admin'), users_controller_1.UserControllers.changeUserRoleToUser);
 router.put('/follow/:userId', (0, auth_1.default)('user', 'admin'), users_controller_1.UserControllers.followUser);
 router.put('/unfollow/:userId', (0, auth_1.default)('user', 'admin'), users_controller_1.UserControllers.unfollowUser);

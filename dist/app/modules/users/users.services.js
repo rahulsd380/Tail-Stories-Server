@@ -80,9 +80,7 @@ const followUser = (currentUserId, userId) => __awaiter(void 0, void 0, void 0, 
     return { user, targetUser };
 });
 const unfollowUser = (currentUserId, userId) => __awaiter(void 0, void 0, void 0, function* () {
-    // Remove the target user from the current user's following list
     const user = yield auth_model_1.User.findByIdAndUpdate(currentUserId, { $pull: { following: { userId: userId } } }, { new: true });
-    // Remove the current user from the target user's followers list
     const targetUser = yield auth_model_1.User.findByIdAndUpdate(userId, { $pull: { followers: { userId: currentUserId } } }, { new: true });
     return { user, targetUser };
 });

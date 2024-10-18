@@ -18,6 +18,7 @@ const http_status_1 = __importDefault(require("http-status"));
 const AppError_1 = __importDefault(require("../../errors/AppError"));
 const sendImageToCloudinary_1 = require("../../utils/sendImageToCloudinary");
 const posts_model_1 = require("./posts.model");
+const fs_1 = __importDefault(require("fs"));
 const createPost = (payload, files) => __awaiter(void 0, void 0, void 0, function* () {
     const { title, body, category, contentType } = payload;
     const imageUrls = [];
@@ -58,15 +59,26 @@ const getSinglePostById = (postId) => __awaiter(void 0, void 0, void 0, function
     const result = yield posts_model_1.Posts.findById(postId);
     return result;
 });
-const updatePost = (id, payload) => __awaiter(void 0, void 0, void 0, function* () {
-    const result = yield posts_model_1.Posts.findByIdAndUpdate(id, payload, {
-        new: true,
-        runValidators: true,
-    });
+const updatePost = (postId, payload, files) => __awaiter(void 0, void 0, void 0, function* () {
+    const imageUrls = [];
+    // If files are provided, upload them to Cloudinary
+    if (files && files.length > 0) {
+        for (const file of files) {
+            const imageName = `${payload === null || payload === void 0 ? void 0 : payload.title}-${Date.now()}`;
+            const path = file.path;
+            const { secure_url } = yield (0, sendImageToCloudinary_1.sendImageToCloudinary)(imageName, path);
+            imageUrls.push(secure_url);
+            // Optionally delete the temp file after upload
+            fs_1.default.unlinkSync(path);
+        }
+    }
+    // Update the post with new data and image URLs
+    const result = yield posts_model_1.Posts.findByIdAndUpdate(postId, Object.assign(Object.assign({}, payload), { images: imageUrls }), // Merge new image URLs with existing data
+    { new: true, runValidators: true });
     return result;
 });
-const deletePost = (id) => __awaiter(void 0, void 0, void 0, function* () {
-    const result = yield posts_model_1.Posts.findByIdAndDelete(id);
+const deletePost = (postId) => __awaiter(void 0, void 0, void 0, function* () {
+    const result = yield posts_model_1.Posts.findByIdAndDelete(postId);
     return result;
 });
 const upvotePost = (postId, userId) => __awaiter(void 0, void 0, void 0, function* () {

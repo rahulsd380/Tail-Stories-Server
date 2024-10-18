@@ -73,8 +73,10 @@ const getSinglePostById = (0, catchAsync_1.default)((req, res) => __awaiter(void
     });
 }));
 const updatePost = (0, catchAsync_1.default)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    const { id } = req.params;
-    const result = yield posts_services_1.PostServices.updatePost(id, req.body);
+    const files = Array.isArray(req.files) ? req.files : [];
+    console.log(files);
+    const { postId } = req.params;
+    const result = yield posts_services_1.PostServices.updatePost(postId, req.body, files);
     (0, sendResponse_1.default)(res, {
         statusCode: http_status_1.default.OK,
         success: true,
@@ -83,8 +85,8 @@ const updatePost = (0, catchAsync_1.default)((req, res) => __awaiter(void 0, voi
     });
 }));
 const deletePost = (0, catchAsync_1.default)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    const { id } = req.params;
-    const result = yield posts_services_1.PostServices.deletePost(id);
+    const { postId } = req.params;
+    const result = yield posts_services_1.PostServices.deletePost(postId);
     (0, sendResponse_1.default)(res, {
         statusCode: http_status_1.default.OK,
         success: true,
@@ -128,6 +130,7 @@ const addComment = (0, catchAsync_1.default)((req, res) => __awaiter(void 0, voi
         data: result,
     });
 }));
+// Edit comment
 const editComment = (0, catchAsync_1.default)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
     // const userId = req.user.userId;
     const { commentId } = req.params;
@@ -139,6 +142,7 @@ const editComment = (0, catchAsync_1.default)((req, res) => __awaiter(void 0, vo
         data: result,
     });
 }));
+// Delete comment
 const deleteComment = (0, catchAsync_1.default)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const { postId, commentId } = req.params;
     const result = yield posts_services_1.PostServices.deleteComment(postId, commentId);

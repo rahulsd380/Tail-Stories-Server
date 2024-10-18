@@ -21,6 +21,8 @@ const config_1 = __importDefault(require("../../config"));
 const auth_utils_1 = require("./auth.utils");
 const sendImageToCloudinary_1 = require("../../utils/sendImageToCloudinary");
 const auth_model_1 = require("./auth.model");
+const sendEmail_1 = require("../../utils/sendEmail");
+const bcrypt_1 = __importDefault(require("bcrypt"));
 // Create user route
 const createUser = (file, payload) => __awaiter(void 0, void 0, void 0, function* () {
     // checking if the file is there or not
@@ -120,8 +122,50 @@ const refreshToken = (token) => __awaiter(void 0, void 0, void 0, function* () {
         accessToken
     };
 });
+const forgetPassword = (email) => __awaiter(void 0, void 0, void 0, function* () {
+    const user = yield auth_model_1.User.isUserExists(email);
+    // Checking if the user exists or not
+    if (!user) {
+        throw new AppError_1.default(http_status_1.default.NOT_FOUND, "User not found!");
+    }
+    ;
+    const jwtpayload = {
+        userId: user._id,
+        email: user.email,
+        role: user.role,
+    };
+    const resetToken = (0, auth_utils_1.createToekn)(jwtpayload, config_1.default.jwt_access_secret, '10m');
+    const resetLink = `${config_1.default.reset_password_ui_url}/reset-password?email=${user.email}&token=${resetToken}`;
+    (0, sendEmail_1.sendEmail)(user.email, resetLink);
+    console.log(resetLink);
+});
+const resetPassword = (payload, token) => __awaiter(void 0, void 0, void 0, function* () {
+    const user = yield auth_model_1.User.isUserExists(payload === null || payload === void 0 ? void 0 : payload.email);
+    // Checking if the user exists or not
+    if (!user) {
+        throw new AppError_1.default(http_status_1.default.NOT_FOUND, "User not found!");
+    }
+    ;
+    // Check if the token is valid or not.
+    const decoded = jsonwebtoken_1.default.verify(token, config_1.default.jwt_access_secret);
+    console.log(decoded);
+    if ((payload === null || payload === void 0 ? void 0 : payload.email) !== (decoded === null || decoded === void 0 ? void 0 : decoded.email)) {
+        throw new AppError_1.default(http_status_1.default.FORBIDDEN, "You are forbidden");
+    }
+    ;
+    const newHashedPassword = yield bcrypt_1.default.hash(payload.newPassword, Number(config_1.default.bcrypt_salt_round));
+    yield auth_model_1.User.findOneAndUpdate({
+        email: decoded.email,
+        role: decoded.role,
+    }, {
+        password: newHashedPassword,
+        passwordChangedAt: new Date(),
+    });
+});
 exports.AuthServices = {
     createUser,
     loginUser,
     refreshToken,
+    forgetPassword,
+    resetPassword,
 };

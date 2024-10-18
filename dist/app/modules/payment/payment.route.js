@@ -7,6 +7,7 @@ exports.PaymentRoutes = void 0;
 const express_1 = __importDefault(require("express"));
 const payment_controller_1 = require("./payment.controller");
 const router = express_1.default.Router();
+router.get("/", payment_controller_1.PaymentControllers.getAllPaymentHistories);
 router.post("/create-payment", payment_controller_1.PaymentControllers.payment);
 router.post("/payment-success", payment_controller_1.PaymentControllers.paymentConfirmationMessage);
 exports.PaymentRoutes = router;

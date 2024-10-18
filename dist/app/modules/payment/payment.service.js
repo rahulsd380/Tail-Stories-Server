@@ -13,9 +13,16 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.PaymentServices = void 0;
+/* eslint-disable @typescript-eslint/no-unused-vars */
 const auth_model_1 = require("../auth/auth.model");
 const payment_model_1 = __importDefault(require("./payment.model"));
 const payment_utils_1 = require("./payment.utils");
+// Get all payments
+const getAllPaymentHistories = () => __awaiter(void 0, void 0, void 0, function* () {
+    const result = yield payment_model_1.default.find();
+    return result;
+});
+// Make payment
 const payment = (payload) => __awaiter(void 0, void 0, void 0, function* () {
     const transactionId = `TNX-${Date.now()}-${payload.email}`;
     const payment = yield new payment_model_1.default({
@@ -40,6 +47,7 @@ const payment = (payload) => __awaiter(void 0, void 0, void 0, function* () {
     const paymentSession = yield (0, payment_utils_1.initiatePayment)(paymentData);
     return paymentSession;
 });
+// Payment confirmation message
 const paymentConfirmation = (transactionId, status) => __awaiter(void 0, void 0, void 0, function* () {
     const verifyResponse = yield (0, payment_utils_1.verifypayment)(transactionId);
     console.log(verifyResponse);
@@ -54,4 +62,5 @@ const paymentConfirmation = (transactionId, status) => __awaiter(void 0, void 0,
 exports.PaymentServices = {
     payment,
     paymentConfirmation,
+    getAllPaymentHistories,
 };

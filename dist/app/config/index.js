@@ -21,4 +21,5 @@ exports.default = {
     aamarpay_signature_key: process.env.SIGNATURE_KEY,
     aamarpay_payment_url: process.env.PAYMENT_URL,
     payment_verify_url: process.env.PAYMENT_VERIFY_URL,
+    reset_password_ui_url: process.env.RESET_PASSWORD_UI_URL,
 };

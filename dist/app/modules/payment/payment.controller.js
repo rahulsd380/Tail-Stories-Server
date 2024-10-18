@@ -17,6 +17,15 @@ const http_status_1 = __importDefault(require("http-status"));
 const catchAsync_1 = __importDefault(require("../../utils/catchAsync"));
 const sendResponse_1 = __importDefault(require("../../utils/sendResponse"));
 const payment_service_1 = require("./payment.service");
+const getAllPaymentHistories = (0, catchAsync_1.default)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const result = yield payment_service_1.PaymentServices.getAllPaymentHistories();
+    (0, sendResponse_1.default)(res, {
+        statusCode: http_status_1.default.OK,
+        success: true,
+        message: "Payment retrived successfully",
+        data: result,
+    });
+}));
 const payment = (0, catchAsync_1.default)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const result = yield payment_service_1.PaymentServices.payment(req.body);
     (0, sendResponse_1.default)(res, {
@@ -34,4 +43,5 @@ const paymentConfirmationMessage = (0, catchAsync_1.default)((req, res) => __awa
 exports.PaymentControllers = {
     payment,
     paymentConfirmationMessage,
+    getAllPaymentHistories,
 };
