@@ -2,7 +2,8 @@
 import express, { NextFunction, Request, Response } from 'express';
 import { UserControllers } from './users.controller';
 import auth from '../../middlewares/auth';
-import { upload } from '../../utils/sendImageToCloudinary';
+// import { upload } from '../../utils/sendImageToCloudinary';
+import { multerUpload } from '../../config/multer.config';
 
 const router = express.Router();
 
@@ -11,8 +12,8 @@ router.get('/me', auth('user', 'admin'), UserControllers.getMe);
 router.get('/:userId',auth('user', 'admin'), UserControllers.getSingleUserById);
 router.get('/my-posts/:authorId', auth('user', 'admin'), UserControllers.getMyPosts);
 
-router.put('/me', auth('user', 'admin'),
-upload.single("file"),
+router.put('/me',
+  multerUpload.single("file"),
   (req: Request, res: Response, next: NextFunction) => {
     if(req?.body?.data){
       req.body = JSON.parse(req?.body?.data);
