@@ -4,6 +4,7 @@ import AppError from "../../errors/AppError";
 import { sendImageToCloudinary } from "../../utils/sendImageToCloudinary";
 import { TComment, TPost } from "./posts.interface";
 import { Posts } from "./posts.model";
+import fs  from 'fs';
 
 const createPost = async (payload: TPost, files: any[]) => {
   const { title, body, category, contentType } = payload;
@@ -54,16 +55,36 @@ const getSinglePostById = async (postId: string) => {
   return result;
 };
 
-const updatePost = async (id: string, payload: Partial<TPost>) => {
-  const result = await Posts.findByIdAndUpdate(id, payload, {
-    new: true,
-    runValidators: true,
-  });
+const updatePost = async (postId: string, payload: Partial<TPost>, files: any[]) => {
+  const imageUrls: string[] = [];
+
+  // If files are provided, upload them to Cloudinary
+  if (files && files.length > 0) {
+    for (const file of files) {
+      const imageName = `${payload?.title}-${Date.now()}`;
+      const path = file.path;
+
+      const { secure_url } = await sendImageToCloudinary(imageName, path);
+      imageUrls.push(secure_url);
+
+      // Optionally delete the temp file after upload
+      fs.unlinkSync(path);
+    }
+  }
+
+
+  // Update the post with new data and image URLs
+  const result = await Posts.findByIdAndUpdate(
+    postId,
+    { ...payload, images: imageUrls }, // Merge new image URLs with existing data
+    { new: true, runValidators: true }
+  );
   return result;
 };
 
-const deletePost = async (id: string) => {
-  const result = await Posts.findByIdAndDelete(id);
+
+const deletePost = async (postId: string) => {
+  const result = await Posts.findByIdAndDelete(postId);
   return result;
 };
 

@@ -102,14 +102,12 @@ const followUser = async (currentUserId: string, userId: string) => {
 
 
 const unfollowUser = async (currentUserId: string, userId: string) => {
-  // Remove the target user from the current user's following list
   const user = await User.findByIdAndUpdate(
     currentUserId,
     { $pull: { following: { userId: userId } } },
     { new: true }
   );
 
-  // Remove the current user from the target user's followers list
   const targetUser = await User.findByIdAndUpdate(
     userId,
     { $pull: { followers: { userId: currentUserId } } },
@@ -118,6 +116,7 @@ const unfollowUser = async (currentUserId: string, userId: string) => {
 
   return { user, targetUser };
 };
+
 
 export const UserServices = {
   getAllUser,

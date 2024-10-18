@@ -69,8 +69,10 @@ const getSinglePostById = catchAsync(async (req, res) => {
 });
 
 const updatePost = catchAsync(async (req, res) => {
-  const { id } = req.params;
-  const result = await PostServices.updatePost(id, req.body);
+  const files = Array.isArray(req.files) ? req.files : [];
+  console.log(files);
+  const { postId } = req.params;
+  const result = await PostServices.updatePost(postId, req.body, files);
 
   sendResponse(res, {
     statusCode: httpStatus.OK,
@@ -81,8 +83,8 @@ const updatePost = catchAsync(async (req, res) => {
 });
 
 const deletePost = catchAsync(async (req, res) => {
-  const { id } = req.params;
-  const result = await PostServices.deletePost(id);
+  const { postId } = req.params;
+  const result = await PostServices.deletePost(postId);
 
   sendResponse(res, {
     statusCode: httpStatus.OK,
@@ -136,6 +138,7 @@ const addComment = catchAsync(async (req, res) => {
   });
 });
 
+// Edit comment
 const editComment = catchAsync(async (req, res) => {
   // const userId = req.user.userId;
   const { commentId } = req.params;
@@ -149,6 +152,7 @@ const editComment = catchAsync(async (req, res) => {
   });
 });
 
+// Delete comment
 const deleteComment = catchAsync(async (req, res) => {
   const { postId, commentId } = req.params;
   const result = await PostServices.deleteComment(postId, commentId);

@@ -127,6 +127,7 @@ const unfollowUser = catchAsync(async (req, res) => {
   });
 });
 
+
 export const UserControllers = {
   getAllUser,
   getMe,
