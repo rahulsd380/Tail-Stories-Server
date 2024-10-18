@@ -10,13 +10,18 @@ router.get('/', UserControllers.getAllUser);
 router.get('/me', auth('user', 'admin'), UserControllers.getMe);
 router.get('/:userId',auth('user', 'admin'), UserControllers.getSingleUserById);
 router.get('/my-posts/:authorId', auth('user', 'admin'), UserControllers.getMyPosts);
+
 router.put('/me', auth('user', 'admin'),
 upload.single("file"),
   (req: Request, res: Response, next: NextFunction) => {
-    req.body = JSON.parse(req.body.data);
+    if(req?.body?.data){
+      req.body = JSON.parse(req?.body?.data);
+    }
     next();
   },
 UserControllers.updateProfile);
+
+
 router.delete('/delete-user/:userId', auth('admin'), UserControllers.deleteUser);
 router.put('/make-admin/:userId', auth('admin'),  UserControllers.changeUserRoleToAdmin);
 router.put('/make-user/:userId', auth('admin'),  UserControllers.changeUserRoleToUser);

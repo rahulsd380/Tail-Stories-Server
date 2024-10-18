@@ -13,6 +13,8 @@ app.use(cookieParser());
 // Middleware for parsing JSON bodies
 app.use(express.json());
 
+// app.use(express.static("./uploads"));
+
 // Middleware for handling CORS with credentials
 app.use(cors({ origin: ['http://localhost:3000'], credentials: true }));
 
