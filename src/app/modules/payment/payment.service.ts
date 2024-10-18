@@ -14,17 +14,22 @@ const getAllPaymentHistories = async () => {
 const payment = async (payload: TPayment) => {
   const transactionId = `TNX-${Date.now()}-${payload.email}`;
 
-  const payment = await new Payment({
+  // Create a new payment record
+  const payment = new Payment({
     name: payload.name,
     email: payload.email,
     phoneNumber: payload.phoneNumber,
     userId: payload.userId,
     amount: payload.amount,
-    address:payload.address,
+    address: payload.address,
     transactionId,
   });
   await payment.save();
 
+  // Update the isVerified field to true for the user
+  await User.findByIdAndUpdate(payload.userId, { isVerified: true });
+
+  // Initiate the payment process
   const paymentData = {
     transactionId,
     amount: payload.amount,
@@ -32,7 +37,7 @@ const payment = async (payload: TPayment) => {
     email: payload.email,
     phoneNumber: payload.phoneNumber,
     userId: payload.userId,
-    address:payload.address,
+    address: payload.address,
   };
 
   const paymentSession = await initiatePayment(paymentData);

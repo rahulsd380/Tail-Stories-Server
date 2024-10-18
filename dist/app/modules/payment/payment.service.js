@@ -25,7 +25,8 @@ const getAllPaymentHistories = () => __awaiter(void 0, void 0, void 0, function*
 // Make payment
 const payment = (payload) => __awaiter(void 0, void 0, void 0, function* () {
     const transactionId = `TNX-${Date.now()}-${payload.email}`;
-    const payment = yield new payment_model_1.default({
+    // Create a new payment record
+    const payment = new payment_model_1.default({
         name: payload.name,
         email: payload.email,
         phoneNumber: payload.phoneNumber,
@@ -35,6 +36,9 @@ const payment = (payload) => __awaiter(void 0, void 0, void 0, function* () {
         transactionId,
     });
     yield payment.save();
+    // Update the isVerified field to true for the user
+    yield auth_model_1.User.findByIdAndUpdate(payload.userId, { isVerified: true });
+    // Initiate the payment process
     const paymentData = {
         transactionId,
         amount: payload.amount,
