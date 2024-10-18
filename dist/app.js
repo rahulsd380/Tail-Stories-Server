@@ -14,6 +14,7 @@ const app = (0, express_1.default)();
 app.use((0, cookie_parser_1.default)());
 // Middleware for parsing JSON bodies
 app.use(express_1.default.json());
+// app.use(express.static("./uploads"));
 // Middleware for handling CORS with credentials
 app.use((0, cors_1.default)({ origin: ['http://localhost:3000'], credentials: true }));
 // Root route
