@@ -15,7 +15,7 @@ router.get('/', users_controller_1.UserControllers.getAllUser);
 router.get('/me', (0, auth_1.default)('user', 'admin'), users_controller_1.UserControllers.getMe);
 router.get('/:userId', (0, auth_1.default)('user', 'admin'), users_controller_1.UserControllers.getSingleUserById);
 router.get('/my-posts/:authorId', (0, auth_1.default)('user', 'admin'), users_controller_1.UserControllers.getMyPosts);
-router.put('/me', multer_config_1.multerUpload.single("file"), (req, res, next) => {
+router.put('/me', (0, auth_1.default)('user', 'admin'), multer_config_1.multerUpload.single("file"), (req, res, next) => {
     var _a, _b;
     if ((_a = req === null || req === void 0 ? void 0 : req.body) === null || _a === void 0 ? void 0 : _a.data) {
         req.body = JSON.parse((_b = req === null || req === void 0 ? void 0 : req.body) === null || _b === void 0 ? void 0 : _b.data);
