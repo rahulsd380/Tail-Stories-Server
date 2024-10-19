@@ -9,7 +9,7 @@ const router = express.Router();
 
 router.get('/', UserControllers.getAllUser);
 router.get('/me', auth('user', 'admin'), UserControllers.getMe);
-router.get('/:userId',auth('user', 'admin'), UserControllers.getSingleUserById);
+router.get('/:userId', UserControllers.getSingleUserById);
 router.get('/my-posts/:authorId', auth('user', 'admin'), UserControllers.getMyPosts);
 
 router.put('/me', auth('user', 'admin'),

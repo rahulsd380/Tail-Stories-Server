@@ -13,7 +13,7 @@ const multer_config_1 = require("../../config/multer.config");
 const router = express_1.default.Router();
 router.get('/', users_controller_1.UserControllers.getAllUser);
 router.get('/me', (0, auth_1.default)('user', 'admin'), users_controller_1.UserControllers.getMe);
-router.get('/:userId', (0, auth_1.default)('user', 'admin'), users_controller_1.UserControllers.getSingleUserById);
+router.get('/:userId', users_controller_1.UserControllers.getSingleUserById);
 router.get('/my-posts/:authorId', (0, auth_1.default)('user', 'admin'), users_controller_1.UserControllers.getMyPosts);
 router.put('/me', (0, auth_1.default)('user', 'admin'), multer_config_1.multerUpload.single("file"), (req, res, next) => {
     var _a, _b;

@@ -19,6 +19,7 @@ const AppError_1 = __importDefault(require("../../errors/AppError"));
 const sendImageToCloudinary_1 = require("../../utils/sendImageToCloudinary");
 const posts_model_1 = require("./posts.model");
 const fs_1 = __importDefault(require("fs"));
+const mongoose_1 = require("mongoose");
 const createPost = (payload, files) => __awaiter(void 0, void 0, void 0, function* () {
     const { title, body, category, contentType } = payload;
     const imageUrls = [];
@@ -48,7 +49,7 @@ const createPost = (payload, files) => __awaiter(void 0, void 0, void 0, functio
     return result;
 });
 const getAllPosts = () => __awaiter(void 0, void 0, void 0, function* () {
-    const result = yield posts_model_1.Posts.find();
+    const result = yield posts_model_1.Posts.find().populate('authorId');
     return result;
 });
 const getMostUpvotedPost = () => __awaiter(void 0, void 0, void 0, function* () {
@@ -86,22 +87,18 @@ const upvotePost = (postId, userId) => __awaiter(void 0, void 0, void 0, functio
     if (!post) {
         throw new Error('Post not found');
     }
-    // Check if user has already upvoted
-    const hasUpvoted = post.upvotes.some((vote) => vote.userId === userId);
-    const hasDownvoted = post.downvotes.some((vote) => vote.userId === userId);
+    const objectUserId = new mongoose_1.Types.ObjectId(userId);
+    const hasUpvoted = post.upvotes.some((vote) => vote.userId.equals(objectUserId));
+    const hasDownvoted = post.downvotes.some((vote) => vote.userId.equals(objectUserId));
     if (hasUpvoted) {
-        // If the user has already upvoted, remove the upvote
-        post.upvotes = post.upvotes.filter((vote) => vote.userId !== userId);
+        post.upvotes = post.upvotes.filter((vote) => !vote.userId.equals(objectUserId));
     }
     else if (hasDownvoted) {
-        // If the user has downvoted, remove downvote first
-        post.downvotes = post.downvotes.filter((vote) => vote.userId !== userId);
-        // Then add upvote
-        post.upvotes.push({ userId, votedAt: new Date() });
+        post.downvotes = post.downvotes.filter((vote) => !vote.userId.equals(objectUserId));
+        post.upvotes.push({ userId: objectUserId, votedAt: new Date() });
     }
     else {
-        // Otherwise, simply add the upvote
-        post.upvotes.push({ userId, votedAt: new Date() });
+        post.upvotes.push({ userId: objectUserId, votedAt: new Date() });
     }
     yield post.save();
     return post;
@@ -111,22 +108,18 @@ const downvotePost = (postId, userId) => __awaiter(void 0, void 0, void 0, funct
     if (!post) {
         throw new Error('Post not found');
     }
-    // Check if user has already downvoted
-    const hasDownvoted = post.downvotes.some((vote) => vote.userId === userId);
-    const hasUpvoted = post.upvotes.some((vote) => vote.userId === userId);
+    const objectUserId = new mongoose_1.Types.ObjectId(userId);
+    const hasDownvoted = post.downvotes.some((vote) => vote.userId.equals(objectUserId));
+    const hasUpvoted = post.upvotes.some((vote) => vote.userId.equals(objectUserId));
     if (hasDownvoted) {
-        // If the user has already downvoted, remove the downvote
-        post.downvotes = post.downvotes.filter((vote) => vote.userId !== userId);
+        post.downvotes = post.downvotes.filter((vote) => !vote.userId.equals(objectUserId));
     }
     else if (hasUpvoted) {
-        // If the user has upvoted, remove upvote first
-        post.upvotes = post.upvotes.filter((vote) => vote.userId !== userId);
-        // Then add downvote
-        post.downvotes.push({ userId, votedAt: new Date() });
+        post.upvotes = post.upvotes.filter((vote) => !vote.userId.equals(objectUserId));
+        post.downvotes.push({ userId: objectUserId, votedAt: new Date() });
     }
     else {
-        // Otherwise, simply add the downvote
-        post.downvotes.push({ userId, votedAt: new Date() });
+        post.downvotes.push({ userId: objectUserId, votedAt: new Date() });
     }
     yield post.save();
     return post;
@@ -142,7 +135,6 @@ const addComment = (postId, authorId, comment) => __awaiter(void 0, void 0, void
         commentedAt: new Date(),
         likes: 0,
     };
-    // Adding the comment to the post
     post.comments.push(newComment);
     yield post.save();
     return post;

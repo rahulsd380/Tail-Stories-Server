@@ -5,6 +5,7 @@ import { sendImageToCloudinary } from "../../utils/sendImageToCloudinary";
 import { TComment, TPost } from "./posts.interface";
 import { Posts } from "./posts.model";
 import fs  from 'fs';
+import { Types } from "mongoose";
 
 const createPost = async (payload: TPost, files: any[]) => {
   const { title, body, category, contentType } = payload;
@@ -41,7 +42,7 @@ const createPost = async (payload: TPost, files: any[]) => {
 };
 
 const getAllPosts = async () => {
-  const result = await Posts.find();
+  const result = await Posts.find().populate('authorId');
   return result;
 };
 
@@ -95,26 +96,24 @@ const upvotePost = async (postId: string, userId: string) => {
     throw new Error('Post not found');
   }
 
-  // Check if user has already upvoted
-  const hasUpvoted = post.upvotes.some((vote: any) => vote.userId === userId);
-  const hasDownvoted = post.downvotes.some((vote: any) => vote.userId === userId);
+  const objectUserId = new Types.ObjectId(userId);
+
+  const hasUpvoted = post.upvotes.some((vote: any) => vote.userId.equals(objectUserId));
+  const hasDownvoted = post.downvotes.some((vote: any) => vote.userId.equals(objectUserId));
 
   if (hasUpvoted) {
-    // If the user has already upvoted, remove the upvote
-    post.upvotes = post.upvotes.filter((vote: any) => vote.userId !== userId);
+    post.upvotes = post.upvotes.filter((vote: any) => !vote.userId.equals(objectUserId));
   } else if (hasDownvoted) {
-    // If the user has downvoted, remove downvote first
-    post.downvotes = post.downvotes.filter((vote: any) => vote.userId !== userId);
-    // Then add upvote
-    post.upvotes.push({ userId, votedAt: new Date() });
+    post.downvotes = post.downvotes.filter((vote: any) => !vote.userId.equals(objectUserId));
+    post.upvotes.push({ userId: objectUserId, votedAt: new Date() });
   } else {
-    // Otherwise, simply add the upvote
-    post.upvotes.push({ userId, votedAt: new Date() });
+    post.upvotes.push({ userId: objectUserId, votedAt: new Date() });
   }
 
   await post.save();
   return post;
 };
+
 
 const downvotePost = async (postId: string, userId: string) => {
   const post = await Posts.findById(postId);
@@ -123,21 +122,18 @@ const downvotePost = async (postId: string, userId: string) => {
     throw new Error('Post not found');
   }
 
-  // Check if user has already downvoted
-  const hasDownvoted = post.downvotes.some((vote: any) => vote.userId === userId);
-  const hasUpvoted = post.upvotes.some((vote: any) => vote.userId === userId);
+  const objectUserId = new Types.ObjectId(userId);
+
+  const hasDownvoted = post.downvotes.some((vote: any) => vote.userId.equals(objectUserId)); 
+  const hasUpvoted = post.upvotes.some((vote: any) => vote.userId.equals(objectUserId));
 
   if (hasDownvoted) {
-    // If the user has already downvoted, remove the downvote
-    post.downvotes = post.downvotes.filter((vote: any) => vote.userId !== userId);
+    post.downvotes = post.downvotes.filter((vote: any) => !vote.userId.equals(objectUserId));
   } else if (hasUpvoted) {
-    // If the user has upvoted, remove upvote first
-    post.upvotes = post.upvotes.filter((vote: any) => vote.userId !== userId);
-    // Then add downvote
-    post.downvotes.push({ userId, votedAt: new Date() });
+    post.upvotes = post.upvotes.filter((vote: any) => !vote.userId.equals(objectUserId));
+    post.downvotes.push({ userId: objectUserId, votedAt: new Date() });
   } else {
-    // Otherwise, simply add the downvote
-    post.downvotes.push({ userId, votedAt: new Date() });
+    post.downvotes.push({ userId: objectUserId, votedAt: new Date() });
   }
 
   await post.save();
@@ -146,7 +142,7 @@ const downvotePost = async (postId: string, userId: string) => {
 
 const addComment = async (
   postId: string,
-  authorId: string,
+  authorId: Types.ObjectId,
   comment: string
 ): Promise<any> => {
   const post = await Posts.findById(postId);
@@ -161,7 +157,6 @@ const addComment = async (
     likes: 0,
   };
 
-  // Adding the comment to the post
   post.comments.push(newComment);
   
   await post.save();

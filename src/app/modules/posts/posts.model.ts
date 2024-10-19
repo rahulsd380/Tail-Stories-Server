@@ -2,12 +2,12 @@ import { Schema, model } from 'mongoose';
 import { TComment, TPost, TVote } from './posts.interface';
 
 const VoteSchema = new Schema<TVote>({
-  userId: { type: String, required: true },
+  userId: { type: Schema.Types.ObjectId, ref: 'User', required: true },
   votedAt: { type: Date, required: true, default: Date.now },
 });
 
 const CommentSchema = new Schema<TComment>({
-  authorId: { type: String, required: true },
+  authorId: { type: Schema.Types.ObjectId, ref: 'User', required: true },
   commentedAt: { type: Date, required: true, default: Date.now },
   comment: { type: String, required: true },
   likes: { type: Number, required: true, default: 0 },
@@ -24,7 +24,7 @@ const PostContentSchema = new Schema<TPost>({
   comments: { type: [CommentSchema], default: [] },
   category: { type: String, required: true },
   createdAt: { type: Date, default: Date.now },
-  authorId: { type: String, required: true },
+  authorId: { type: Schema.Types.ObjectId, ref: 'User', required: true },
 });
 
 export const Posts = model<TPost>('Posts', PostContentSchema);

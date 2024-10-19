@@ -95,7 +95,7 @@ const getSingleUserById = catchAsync(async (req, res) => {
   sendResponse(res, {
     statusCode: httpStatus.OK,
     success: true,
-    message: 'Post fetched successfully.',
+    message: 'User data fetched successfully.',
     data: result,
   });
 });

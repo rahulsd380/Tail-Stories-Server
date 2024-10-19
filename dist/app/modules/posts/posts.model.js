@@ -3,11 +3,11 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.Posts = void 0;
 const mongoose_1 = require("mongoose");
 const VoteSchema = new mongoose_1.Schema({
-    userId: { type: String, required: true },
+    userId: { type: mongoose_1.Schema.Types.ObjectId, ref: 'User', required: true },
     votedAt: { type: Date, required: true, default: Date.now },
 });
 const CommentSchema = new mongoose_1.Schema({
-    authorId: { type: String, required: true },
+    authorId: { type: mongoose_1.Schema.Types.ObjectId, ref: 'User', required: true },
     commentedAt: { type: Date, required: true, default: Date.now },
     comment: { type: String, required: true },
     likes: { type: Number, required: true, default: 0 },
@@ -23,6 +23,6 @@ const PostContentSchema = new mongoose_1.Schema({
     comments: { type: [CommentSchema], default: [] },
     category: { type: String, required: true },
     createdAt: { type: Date, default: Date.now },
-    authorId: { type: String, required: true },
+    authorId: { type: mongoose_1.Schema.Types.ObjectId, ref: 'User', required: true },
 });
 exports.Posts = (0, mongoose_1.model)('Posts', PostContentSchema);
