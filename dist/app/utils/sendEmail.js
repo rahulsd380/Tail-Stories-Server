@@ -14,15 +14,14 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.sendEmail = void 0;
 const nodemailer_1 = __importDefault(require("nodemailer"));
-// import config from '../config';
 const sendEmail = (to, html) => __awaiter(void 0, void 0, void 0, function* () {
     const transporter = nodemailer_1.default.createTransport({
         host: "smtp.gmail.com",
-        port: 465,
+        port: 587,
         secure: false,
         auth: {
             user: "rahulsd380@gmail.com",
-            pass: "gats cyux trfv rpxm",
+            pass: "dkbq cozx vvpi annm",
         },
     });
     yield transporter.sendMail({
