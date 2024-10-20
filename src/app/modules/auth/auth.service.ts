@@ -179,9 +179,10 @@ const forgetPassword = async (email: string) => {
    '10m'
   );
 
- const resetLink = `${config.reset_password_ui_url}/reset-password?id=${user?._id}&token=${resetToken}`;
+ const resetLink = `${config.reset_password_ui_url}/reset-password?email=${user?.email}&token=${resetToken}`;
+ console.log(resetLink)
 
- sendEmail(user?.email, resetLink);
+ await sendEmail(user?.email, resetLink);
 };
 
 const resetPassword = async (payload:{email:string, newPassword:string}, token:string) => {
