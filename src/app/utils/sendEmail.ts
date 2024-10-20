@@ -8,7 +8,7 @@ export const sendEmail = async (to:string, html:string) => {
         secure: false,
         auth: {
           user: "rahulsd380@gmail.com",
-          pass: "dkbq cozx vvpi annm",
+          pass: "gats cyux trfv rpxm",
         },
       });
 
