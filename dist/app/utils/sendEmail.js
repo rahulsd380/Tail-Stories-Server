@@ -25,7 +25,7 @@ const sendEmail = (to, html) => __awaiter(void 0, void 0, void 0, function* () {
         },
     });
     yield transporter.sendMail({
-        from: 'rahulsd380@gmail.com', // sender address
+        from: 'rahulsd836@gmail.com', // sender address
         to,
         subject: "Reset your password within 10 minutes", // Subject line
         text: "Reset your password within 10 minutes", // plain text body
