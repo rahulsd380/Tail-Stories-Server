@@ -179,7 +179,7 @@ const forgetPassword = async (email: string) => {
    '10m'
   );
 
- const resetLink = `${config.reset_password_ui_url}/reset-password?email=${user?.email}&token=${resetToken}`;
+ const resetLink = `${config.reset_password_ui_url}/reset-password?id=${user?._id}&token=${resetToken}`;
 
  sendEmail(user?.email, resetLink);
 };
