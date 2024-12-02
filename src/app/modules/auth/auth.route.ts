@@ -15,6 +15,7 @@ router.post(
   },
   AuthControllers.createUser
 );
+
 router.post(
   "/login",
   validateRequest(AuthValidations.LoginValidationSchema),

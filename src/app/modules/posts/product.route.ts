@@ -1,7 +1,7 @@
 import express, { NextFunction, Request, Response } from "express";
 // import auth from "../../middlewares/auth";
 // import { UserRole } from "../auth/auth.constannts";
-import { PostControllers } from "./posts.controller";
+import { PostControllers } from "./product.controller";
 // import { upload } from "../../utils/sendImageToCloudinary";
 import { multerUpload } from "../../config/multer.config";
 

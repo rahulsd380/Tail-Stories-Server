@@ -2,7 +2,7 @@
 import { sendImageToCloudinary } from '../../utils/sendImageToCloudinary';
 import { TUser } from '../auth/auth.interface';
 import { User } from '../auth/auth.model';
-import { Posts } from '../posts/posts.model';
+import { Posts } from '../posts/product.model';
 
 const getAllUser = async () => {
   const result = await User.find();
