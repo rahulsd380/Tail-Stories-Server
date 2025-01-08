@@ -42,7 +42,7 @@ const createPost = async (payload: TPost, files: any[]) => {
 };
 
 const getAllPosts = async () => {
-  const result = await Posts.find().populate('authorId');
+  const result = await Posts.find().populate('authorId')
   return result;
 };
 
