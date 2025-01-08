@@ -2,8 +2,8 @@
 import httpStatus from "http-status";
 import AppError from "../../errors/AppError";
 import { sendImageToCloudinary } from "../../utils/sendImageToCloudinary";
-import { TComment, TPost } from "./posts.interface";
-import { Posts } from "./posts.model";
+import { TComment, TPost } from "./product.interface";
+import { Posts } from "./product.model";
 import fs  from 'fs';
 import { Types } from "mongoose";
 
