@@ -9,7 +9,12 @@ import { UserRole } from "./auth.constannts";
 export interface SocialMediaLink {
   platform: string;
   url: string;
-}
+};
+
+export interface FriendRequest {
+  friendId: string;
+  status: "pending" | "accepted" | "declined";
+};
 
 export interface TUser {
   _id: string;
@@ -27,7 +32,12 @@ export interface TUser {
   occupation?: string;
   socialMediaLinks?: SocialMediaLink[];
   followers: Array<string>;
-  following: Array<string>
+  following: Array<string>;
+  friends : Array<string>;
+  friendReq: {
+    sent: FriendRequest[];
+    received: FriendRequest[];
+  };
   role: "admin" | "user";
   isVerified: boolean;
 }

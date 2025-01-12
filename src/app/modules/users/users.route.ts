@@ -30,5 +30,10 @@ router.put('/make-user/:userId', auth('admin'),  UserControllers.changeUserRoleT
 router.put('/follow/:userId', auth('user', 'admin'), UserControllers.followUser);
 router.put('/unfollow/:userId', auth('user', 'admin'), UserControllers.unfollowUser);
 
+// router.put('/friend-request/send/:userId', auth('user', 'admin'), UserControllers.sendFriendRequest);
+// router.put('/friend-request/accept/:userId', auth('user', 'admin'), UserControllers.acceptFriendRequest);
+// router.put('/friend-request/decline/:userId', auth('user', 'admin'), UserControllers.declineFriendRequest);
+
+
 
 export const userRoutes = router;

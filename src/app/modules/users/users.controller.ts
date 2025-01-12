@@ -128,6 +128,45 @@ const unfollowUser = catchAsync(async (req, res) => {
   });
 });
 
+const sendFriendRequest = catchAsync(async (req, res) => {
+  const currentUserId = req.user.userId;
+  const { userId } = req.params;
+
+  const result = await UserServices.sendFriendRequest(currentUserId, userId);
+  sendResponse(res, {
+    statusCode: httpStatus.OK,
+    success: true,
+    message: 'Friend request sent successfully',
+    data: result,
+  });
+});
+
+const acceptFriendRequest = catchAsync(async (req, res) => {
+  const currentUserId = req.user.userId;
+  const { userId } = req.params;
+
+  const result = await UserServices.acceptFriendRequest(currentUserId, userId);
+  sendResponse(res, {
+    statusCode: httpStatus.OK,
+    success: true,
+    message: 'Friend request accepted successfully',
+    data: result,
+  });
+});
+
+const declineFriendRequest = catchAsync(async (req, res) => {
+  const currentUserId = req.user.userId;
+  const { userId } = req.params;
+
+  const result = await UserServices.declineFriendRequest(currentUserId, userId);
+  sendResponse(res, {
+    statusCode: httpStatus.OK,
+    success: true,
+    message: 'Friend request declined successfully',
+    data: result,
+  });
+});
+
 
 export const UserControllers = {
   getAllUser,
@@ -140,4 +179,7 @@ export const UserControllers = {
   getSingleUserById,
   followUser,
   unfollowUser,
+  sendFriendRequest,
+  acceptFriendRequest,
+  declineFriendRequest,
 };

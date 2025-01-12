@@ -1,4 +1,4 @@
-import { Schema, model } from "mongoose";
+import { Schema, Types, model } from "mongoose";
 import bcrypt from "bcrypt";
 import config from "../../config";
 import { TUser, UserModel } from "./auth.interface";
@@ -6,6 +6,11 @@ import { TUser, UserModel } from "./auth.interface";
 const socialMediaLinkSchema = new Schema({
   platform: { type: String },
   url: { type: String },
+});
+
+const friendRequestSchema = new Schema({
+  friendId: { type: Types.ObjectId, ref: 'User', required: true },
+  status: { type: String, enum: ['pending', 'accepted', 'rejected'], default: 'pending' }
 });
 
 const userSchema = new Schema<TUser, UserModel>(
@@ -35,7 +40,12 @@ const userSchema = new Schema<TUser, UserModel>(
       default: [],
     },
     followers: { type: [String], default: [] },
-  following: { type: [String], default: [] },
+    following: { type: [String], default: [] },
+    friends: { type: [String], default: [] },
+    friendReq: {
+      sent: [friendRequestSchema],
+      received: [friendRequestSchema]
+  },
     role: {
       type: String,
       enum: ["admin", "user"],

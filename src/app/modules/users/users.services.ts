@@ -9,8 +9,6 @@ const getAllUser = async () => {
   return result;
 };
 
-
-
 const getMyPosts = async (authorId: string) => {
   const result = await Posts.find({authorId});
   return result;
@@ -43,8 +41,6 @@ const updateProfile = async (id: string, payload: Partial<TUser>, profilePic: an
 
   return result;
 };
-
-
 
 const changeUserRoleToAdmin = async (userId: string) => {
   const user = await User.findById(userId);
@@ -117,6 +113,54 @@ const unfollowUser = async (currentUserId: string, userId: string) => {
   return { user, targetUser };
 };
 
+const sendFriendRequest = async (currentUserId: string, userId: string) => {
+  const user = await User.findByIdAndUpdate(
+    currentUserId,
+    { $addToSet: { 'friendReq.sent': { friendId: userId, status: 'pending' } } },
+    { new: true }
+  );
+
+  const targetUser = await User.findByIdAndUpdate(
+    userId,
+    { $addToSet: { 'friendReq.received': { friendId: currentUserId, status: 'pending' } } },
+    { new: true }
+  );
+
+  return { user, targetUser };
+};
+
+const acceptFriendRequest = async (currentUserId: string, userId: string) => {
+  await User.findOneAndUpdate(
+    { _id: currentUserId, 'friendReq.received.friendId': userId },
+    { $set: { 'friendReq.received.$.status': 'accepted' }, $addToSet: { friends: userId } },
+    { new: true }
+  );
+
+  await User.findOneAndUpdate(
+    { _id: userId, 'friendReq.sent.friendId': currentUserId },
+    { $set: { 'friendReq.sent.$.status': 'accepted' }, $addToSet: { friends: currentUserId } },
+    { new: true }
+  );
+
+  return { message: 'Friend request accepted' };
+};
+
+const declineFriendRequest = async (currentUserId: string, userId: string) => {
+  await User.findOneAndUpdate(
+    { _id: currentUserId, 'friendReq.received.friendId': userId },
+    { $set: { 'friendReq.received.$.status': 'declined' } },
+    { new: true }
+  );
+
+  await User.findOneAndUpdate(
+    { _id: userId, 'friendReq.sent.friendId': currentUserId },
+    { $set: { 'friendReq.sent.$.status': 'declined' } },
+    { new: true }
+  );
+
+  return { message: 'Friend request declined' };
+};
+
 
 export const UserServices = {
   getAllUser,
@@ -129,4 +173,7 @@ export const UserServices = {
   getSingleUserById,
   followUser,
   unfollowUser,
+  sendFriendRequest,
+  acceptFriendRequest,
+  declineFriendRequest,
 };
