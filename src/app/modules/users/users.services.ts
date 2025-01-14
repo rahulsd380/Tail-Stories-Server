@@ -2,6 +2,7 @@
 import { sendImageToCloudinary } from '../../utils/sendImageToCloudinary';
 import { TUser } from '../auth/auth.interface';
 import { User } from '../auth/auth.model';
+import { Group } from '../groups/group.model';
 import { Posts } from '../posts/product.model';
 
 const getAllUser = async () => {
@@ -9,10 +10,8 @@ const getAllUser = async () => {
   return result;
 };
 
-
-
 const getMyPosts = async (authorId: string) => {
-  const result = await Posts.find({authorId});
+  const result = await Posts.find({ authorId });
   return result;
 };
 
@@ -43,8 +42,6 @@ const updateProfile = async (id: string, payload: Partial<TUser>, profilePic: an
 
   return result;
 };
-
-
 
 const changeUserRoleToAdmin = async (userId: string) => {
   const user = await User.findById(userId);
@@ -79,7 +76,7 @@ const deleteUser = async (id: string) => {
   return result;
 };
 
-const getSingleUserById = async (userId:string) => {
+const getSingleUserById = async (userId: string) => {
   const result = await User.findById(userId);
   return result;
 };
@@ -117,6 +114,114 @@ const unfollowUser = async (currentUserId: string, userId: string) => {
   return { user, targetUser };
 };
 
+const sendFriendRequest = async (currentUserId: string, userId: string) => {
+  const user = await User.findByIdAndUpdate(
+    currentUserId,
+    { $addToSet: { 'friendReq.sent': { friendId: userId, status: 'pending' } } },
+    { new: true }
+  );
+
+  const targetUser = await User.findByIdAndUpdate(
+    userId,
+    { $addToSet: { 'friendReq.received': { friendId: currentUserId, status: 'pending' } } },
+    { new: true }
+  );
+
+  return { user, targetUser };
+};
+
+const acceptFriendRequest = async (currentUserId: string, userId: string) => {
+  // Find and remove the received friend request from the current user's received requests
+  const currentUser = await User.findByIdAndUpdate(
+    currentUserId,
+    {
+      $pull: { 'friendReq.received': { friendId: userId } },
+      $addToSet: { 'friends': userId } // Optionally add the user to the friends list
+    },
+    { new: true }
+  );
+
+  // Find and remove the sent friend request from the target user's sent requests
+  const targetUser = await User.findByIdAndUpdate(
+    userId,
+    {
+      $pull: { 'friendReq.sent': { friendId: currentUserId } },
+      $addToSet: { 'friends': currentUserId } // Optionally add the current user to the friends list
+    },
+    { new: true }
+  );
+
+  // Check if both updates were successful
+  if (!currentUser || !targetUser) {
+    throw new Error('Error accepting friend request');
+  }
+
+  return { success: true, message: "Friend request accepted" };
+};
+
+
+
+
+
+const declineFriendRequest = async (currentUserId: string, userId: string) => {
+  // Remove the friend request from the current user's received requests
+  await User.findByIdAndUpdate(
+    currentUserId,
+    { $pull: { 'friendReq.received': { friendId: userId } } },
+    { new: true }
+  );
+
+  // Remove the friend request from the target user's sent requests
+  await User.findByIdAndUpdate(
+    userId,
+    { $pull: { 'friendReq.sent': { friendId: currentUserId } } },
+    { new: true }
+  );
+
+  return { message: 'Friend request declined' };
+};
+
+const sharePost = async (currentUserId: string, postId: string) => {
+  // Add postId to the user's sharedPosts array
+  const user = await User.findByIdAndUpdate(
+    currentUserId,
+    { $addToSet: { sharedPosts: postId } },
+    { new: true }
+  );
+
+  // Increment the totalShared field in the Post document
+  const post = await Posts.findByIdAndUpdate(
+    postId,
+    { $inc: { totalShared: 1 } },
+    { new: true }
+  );
+
+  if (!user || !post) {
+    throw new Error('User or Post not found');
+  }
+
+  return {
+    user,
+    post,
+  };
+};
+
+const joinGroup = async (currentUserId: string, groupId: string) => {
+  const group = await Group.findByIdAndUpdate(
+    groupId,
+    { $addToSet: { members: currentUserId } },
+    { new: true }
+  );
+
+  if (!group) {
+    throw new Error('Group not found');
+  }
+
+  return group;
+};
+
+
+
 
 export const UserServices = {
   getAllUser,
@@ -129,4 +234,9 @@ export const UserServices = {
   getSingleUserById,
   followUser,
   unfollowUser,
+  sendFriendRequest,
+  acceptFriendRequest,
+  declineFriendRequest,
+  sharePost,
+  joinGroup,
 };

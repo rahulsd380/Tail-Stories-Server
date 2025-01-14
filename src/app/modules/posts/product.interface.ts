@@ -1,14 +1,29 @@
-import { Types } from "mongoose";
 
-export type TProduct = {
-  name: string;
-  description: string;
-  price: number;
+export type TVote = {
+  userId: string;
+  votedAt: Date;
+};
+
+export type TComment = {
+  _id?:string;
+  authorId: string;
+  commentedAt: Date;
+  comment: string;
+  likes: number;
+};
+
+export type TPost = {
+  id: string;
+  title: string;
+  body: string;
+  images?: string[];
+  upvotes: TVote[];
+  downvotes: TVote[];
+  status?: 'draft' | 'published' | 'archived';
+  contentType : "free" | "premium";
+  comments: TComment[];
   category: string;
-  brand: string;
-  stock: number;
-  images: { url: string }[];
-  ratings: number;
-  reviews: { userId: Types.ObjectId; reviewId: Types.ObjectId }[];
   createdAt: Date;
+  authorId: string;
+  totalShared:number;
 };
