@@ -34,6 +34,7 @@ router.put('/friend-request/send/:userId', auth('user', 'admin'), UserController
 router.put('/friend-request/accept/:userId', auth('user', 'admin'), UserControllers.acceptFriendRequest);
 router.put('/friend-request/decline/:userId', auth('user', 'admin'), UserControllers.declineFriendRequest);
 router.put('/share/:postId', auth('user', 'admin'), UserControllers.sharePost);
+router.put('/join-group/:groupId', auth('user', 'admin'), UserControllers.joinGroup);
 
 
 

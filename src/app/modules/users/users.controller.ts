@@ -180,6 +180,20 @@ const sharePost = catchAsync(async (req, res) => {
   });
 });
 
+const joinGroup = catchAsync(async (req, res) => {
+  const currentUserId = req.user.userId;
+  const { groupId } = req.params;
+
+  const result = await UserServices.joinGroup(currentUserId, groupId);
+  
+  sendResponse(res, {
+    statusCode: httpStatus.OK,
+    success: true,
+    message: 'Successfully joined the group',
+    data: result,
+  });
+});
+
 
 export const UserControllers = {
   getAllUser,
@@ -196,4 +210,5 @@ export const UserControllers = {
   acceptFriendRequest,
   declineFriendRequest,
   sharePost,
+  joinGroup,
 };

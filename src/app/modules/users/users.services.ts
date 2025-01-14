@@ -2,6 +2,7 @@
 import { sendImageToCloudinary } from '../../utils/sendImageToCloudinary';
 import { TUser } from '../auth/auth.interface';
 import { User } from '../auth/auth.model';
+import { Group } from '../groups/group.model';
 import { Posts } from '../posts/product.model';
 
 const getAllUser = async () => {
@@ -205,6 +206,21 @@ const sharePost = async (currentUserId: string, postId: string) => {
   };
 };
 
+const joinGroup = async (currentUserId: string, groupId: string) => {
+  const group = await Group.findByIdAndUpdate(
+    groupId,
+    { $addToSet: { members: currentUserId } },
+    { new: true }
+  );
+
+  if (!group) {
+    throw new Error('Group not found');
+  }
+
+  return group;
+};
+
+
 
 
 export const UserServices = {
@@ -222,4 +238,5 @@ export const UserServices = {
   acceptFriendRequest,
   declineFriendRequest,
   sharePost,
+  joinGroup,
 };
