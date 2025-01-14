@@ -123,6 +123,61 @@ const unfollowUser = (0, catchAsync_1.default)((req, res) => __awaiter(void 0, v
         data: result,
     });
 }));
+const sendFriendRequest = (0, catchAsync_1.default)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const currentUserId = req.user.userId;
+    const { userId } = req.params;
+    const result = yield users_services_1.UserServices.sendFriendRequest(currentUserId, userId);
+    (0, sendResponse_1.default)(res, {
+        statusCode: http_status_1.default.OK,
+        success: true,
+        message: 'Friend request sent successfully',
+        data: result,
+    });
+}));
+const acceptFriendRequest = (0, catchAsync_1.default)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const currentUserId = req.user.userId;
+    const { userId } = req.params;
+    const result = yield users_services_1.UserServices.acceptFriendRequest(currentUserId, userId);
+    (0, sendResponse_1.default)(res, {
+        statusCode: http_status_1.default.OK,
+        success: true,
+        message: 'Friend request accepted successfully',
+        data: result,
+    });
+}));
+const declineFriendRequest = (0, catchAsync_1.default)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const currentUserId = req.user.userId;
+    const { userId } = req.params;
+    const result = yield users_services_1.UserServices.declineFriendRequest(currentUserId, userId);
+    (0, sendResponse_1.default)(res, {
+        statusCode: http_status_1.default.OK,
+        success: true,
+        message: 'Friend request declined successfully',
+        data: result,
+    });
+}));
+const sharePost = (0, catchAsync_1.default)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const currentUserId = req.user.userId;
+    const { postId } = req.params;
+    const result = yield users_services_1.UserServices.sharePost(currentUserId, postId);
+    (0, sendResponse_1.default)(res, {
+        statusCode: http_status_1.default.OK,
+        success: true,
+        message: 'Post shared successfully',
+        data: result,
+    });
+}));
+const joinGroup = (0, catchAsync_1.default)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const currentUserId = req.user.userId;
+    const { groupId } = req.params;
+    const result = yield users_services_1.UserServices.joinGroup(currentUserId, groupId);
+    (0, sendResponse_1.default)(res, {
+        statusCode: http_status_1.default.OK,
+        success: true,
+        message: 'Successfully joined the group',
+        data: result,
+    });
+}));
 exports.UserControllers = {
     getAllUser,
     getMe,
@@ -134,4 +189,9 @@ exports.UserControllers = {
     getSingleUserById,
     followUser,
     unfollowUser,
+    sendFriendRequest,
+    acceptFriendRequest,
+    declineFriendRequest,
+    sharePost,
+    joinGroup,
 };

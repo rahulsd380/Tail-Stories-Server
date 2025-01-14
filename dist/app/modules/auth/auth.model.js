@@ -20,6 +20,10 @@ const socialMediaLinkSchema = new mongoose_1.Schema({
     platform: { type: String },
     url: { type: String },
 });
+const friendRequestSchema = new mongoose_1.Schema({
+    friendId: { type: mongoose_1.Types.ObjectId, ref: 'User', required: true },
+    status: { type: String, enum: ['pending', 'accepted', 'rejected'], default: 'pending' }
+});
 const userSchema = new mongoose_1.Schema({
     name: {
         type: String,
@@ -47,6 +51,12 @@ const userSchema = new mongoose_1.Schema({
     },
     followers: { type: [String], default: [] },
     following: { type: [String], default: [] },
+    friends: { type: [String], default: [] },
+    sharedPosts: { type: [String], default: [] },
+    friendReq: {
+        sent: [friendRequestSchema],
+        received: [friendRequestSchema]
+    },
     role: {
         type: String,
         enum: ["admin", "user"],

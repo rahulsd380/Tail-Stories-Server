@@ -27,4 +27,9 @@ router.put('/make-admin/:userId', (0, auth_1.default)('admin'), users_controller
 router.put('/make-user/:userId', (0, auth_1.default)('admin'), users_controller_1.UserControllers.changeUserRoleToUser);
 router.put('/follow/:userId', (0, auth_1.default)('user', 'admin'), users_controller_1.UserControllers.followUser);
 router.put('/unfollow/:userId', (0, auth_1.default)('user', 'admin'), users_controller_1.UserControllers.unfollowUser);
+router.put('/friend-request/send/:userId', (0, auth_1.default)('user', 'admin'), users_controller_1.UserControllers.sendFriendRequest);
+router.put('/friend-request/accept/:userId', (0, auth_1.default)('user', 'admin'), users_controller_1.UserControllers.acceptFriendRequest);
+router.put('/friend-request/decline/:userId', (0, auth_1.default)('user', 'admin'), users_controller_1.UserControllers.declineFriendRequest);
+router.put('/share/:postId', (0, auth_1.default)('user', 'admin'), users_controller_1.UserControllers.sharePost);
+router.put('/join-group/:groupId', (0, auth_1.default)('user', 'admin'), users_controller_1.UserControllers.joinGroup);
 exports.userRoutes = router;
