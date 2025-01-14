@@ -2,10 +2,9 @@
 import httpStatus from "http-status";
 import AppError from "../../errors/AppError";
 import { sendImageToCloudinary } from "../../utils/sendImageToCloudinary";
+import fs  from 'fs';
 import { TComment, TPost } from "./product.interface";
 import { Posts } from "./product.model";
-import fs  from 'fs';
-import { Types } from "mongoose";
 
 const createPost = async (payload: TPost, files: any[]) => {
   const { title, body, category, contentType } = payload;
@@ -42,7 +41,7 @@ const createPost = async (payload: TPost, files: any[]) => {
 };
 
 const getAllPosts = async () => {
-  const result = await Posts.find().populate('authorId')
+  const result = await Posts.find();
   return result;
 };
 
@@ -96,24 +95,26 @@ const upvotePost = async (postId: string, userId: string) => {
     throw new Error('Post not found');
   }
 
-  const objectUserId = new Types.ObjectId(userId);
-
-  const hasUpvoted = post.upvotes.some((vote: any) => vote.userId.equals(objectUserId));
-  const hasDownvoted = post.downvotes.some((vote: any) => vote.userId.equals(objectUserId));
+  // Check if user has already upvoted
+  const hasUpvoted = post.upvotes.some((vote: any) => vote.userId === userId);
+  const hasDownvoted = post.downvotes.some((vote: any) => vote.userId === userId);
 
   if (hasUpvoted) {
-    post.upvotes = post.upvotes.filter((vote: any) => !vote.userId.equals(objectUserId));
+    // If the user has already upvoted, remove the upvote
+    post.upvotes = post.upvotes.filter((vote: any) => vote.userId !== userId);
   } else if (hasDownvoted) {
-    post.downvotes = post.downvotes.filter((vote: any) => !vote.userId.equals(objectUserId));
-    post.upvotes.push({ userId: objectUserId, votedAt: new Date() });
+    // If the user has downvoted, remove downvote first
+    post.downvotes = post.downvotes.filter((vote: any) => vote.userId !== userId);
+    // Then add upvote
+    post.upvotes.push({ userId, votedAt: new Date() });
   } else {
-    post.upvotes.push({ userId: objectUserId, votedAt: new Date() });
+    // Otherwise, simply add the upvote
+    post.upvotes.push({ userId, votedAt: new Date() });
   }
 
   await post.save();
   return post;
 };
-
 
 const downvotePost = async (postId: string, userId: string) => {
   const post = await Posts.findById(postId);
@@ -122,18 +123,21 @@ const downvotePost = async (postId: string, userId: string) => {
     throw new Error('Post not found');
   }
 
-  const objectUserId = new Types.ObjectId(userId);
-
-  const hasDownvoted = post.downvotes.some((vote: any) => vote.userId.equals(objectUserId)); 
-  const hasUpvoted = post.upvotes.some((vote: any) => vote.userId.equals(objectUserId));
+  // Check if user has already downvoted
+  const hasDownvoted = post.downvotes.some((vote: any) => vote.userId === userId);
+  const hasUpvoted = post.upvotes.some((vote: any) => vote.userId === userId);
 
   if (hasDownvoted) {
-    post.downvotes = post.downvotes.filter((vote: any) => !vote.userId.equals(objectUserId));
+    // If the user has already downvoted, remove the downvote
+    post.downvotes = post.downvotes.filter((vote: any) => vote.userId !== userId);
   } else if (hasUpvoted) {
-    post.upvotes = post.upvotes.filter((vote: any) => !vote.userId.equals(objectUserId));
-    post.downvotes.push({ userId: objectUserId, votedAt: new Date() });
+    // If the user has upvoted, remove upvote first
+    post.upvotes = post.upvotes.filter((vote: any) => vote.userId !== userId);
+    // Then add downvote
+    post.downvotes.push({ userId, votedAt: new Date() });
   } else {
-    post.downvotes.push({ userId: objectUserId, votedAt: new Date() });
+    // Otherwise, simply add the downvote
+    post.downvotes.push({ userId, votedAt: new Date() });
   }
 
   await post.save();
@@ -142,7 +146,7 @@ const downvotePost = async (postId: string, userId: string) => {
 
 const addComment = async (
   postId: string,
-  authorId: Types.ObjectId,
+  authorId: string,
   comment: string
 ): Promise<any> => {
   const post = await Posts.findById(postId);
@@ -157,6 +161,7 @@ const addComment = async (
     likes: 0,
   };
 
+  // Adding the comment to the post
   post.comments.push(newComment);
   
   await post.save();

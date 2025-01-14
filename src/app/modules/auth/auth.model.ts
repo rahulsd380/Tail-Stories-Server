@@ -42,6 +42,7 @@ const userSchema = new Schema<TUser, UserModel>(
     followers: { type: [String], default: [] },
     following: { type: [String], default: [] },
     friends: { type: [String], default: [] },
+    sharedPosts: { type: [String], default: [] },
     friendReq: {
       sent: [friendRequestSchema],
       received: [friendRequestSchema]

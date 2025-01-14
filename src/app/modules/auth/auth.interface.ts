@@ -38,6 +38,7 @@ export interface TUser {
     sent: FriendRequest[];
     received: FriendRequest[];
   };
+  sharedPosts : Array<string>;
   role: "admin" | "user";
   isVerified: boolean;
 }

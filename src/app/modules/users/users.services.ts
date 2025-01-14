@@ -10,7 +10,7 @@ const getAllUser = async () => {
 };
 
 const getMyPosts = async (authorId: string) => {
-  const result = await Posts.find({authorId});
+  const result = await Posts.find({ authorId });
   return result;
 };
 
@@ -75,7 +75,7 @@ const deleteUser = async (id: string) => {
   return result;
 };
 
-const getSingleUserById = async (userId:string) => {
+const getSingleUserById = async (userId: string) => {
   const result = await User.findById(userId);
   return result;
 };
@@ -130,36 +130,81 @@ const sendFriendRequest = async (currentUserId: string, userId: string) => {
 };
 
 const acceptFriendRequest = async (currentUserId: string, userId: string) => {
-  await User.findOneAndUpdate(
-    { _id: currentUserId, 'friendReq.received.friendId': userId },
-    { $set: { 'friendReq.received.$.status': 'accepted' }, $addToSet: { friends: userId } },
+  // Find and remove the received friend request from the current user's received requests
+  const currentUser = await User.findByIdAndUpdate(
+    currentUserId,
+    {
+      $pull: { 'friendReq.received': { friendId: userId } },
+      $addToSet: { 'friends': userId } // Optionally add the user to the friends list
+    },
     { new: true }
   );
 
-  await User.findOneAndUpdate(
-    { _id: userId, 'friendReq.sent.friendId': currentUserId },
-    { $set: { 'friendReq.sent.$.status': 'accepted' }, $addToSet: { friends: currentUserId } },
+  // Find and remove the sent friend request from the target user's sent requests
+  const targetUser = await User.findByIdAndUpdate(
+    userId,
+    {
+      $pull: { 'friendReq.sent': { friendId: currentUserId } },
+      $addToSet: { 'friends': currentUserId } // Optionally add the current user to the friends list
+    },
     { new: true }
   );
 
-  return { message: 'Friend request accepted' };
+  // Check if both updates were successful
+  if (!currentUser || !targetUser) {
+    throw new Error('Error accepting friend request');
+  }
+
+  return { success: true, message: "Friend request accepted" };
 };
 
+
+
+
+
 const declineFriendRequest = async (currentUserId: string, userId: string) => {
-  await User.findOneAndUpdate(
-    { _id: currentUserId, 'friendReq.received.friendId': userId },
-    { $set: { 'friendReq.received.$.status': 'declined' } },
+  // Remove the friend request from the current user's received requests
+  await User.findByIdAndUpdate(
+    currentUserId,
+    { $pull: { 'friendReq.received': { friendId: userId } } },
     { new: true }
   );
 
-  await User.findOneAndUpdate(
-    { _id: userId, 'friendReq.sent.friendId': currentUserId },
-    { $set: { 'friendReq.sent.$.status': 'declined' } },
+  // Remove the friend request from the target user's sent requests
+  await User.findByIdAndUpdate(
+    userId,
+    { $pull: { 'friendReq.sent': { friendId: currentUserId } } },
     { new: true }
   );
 
   return { message: 'Friend request declined' };
 };
+
+const sharePost = async (currentUserId: string, postId: string) => {
+  // Add postId to the user's sharedPosts array
+  const user = await User.findByIdAndUpdate(
+    currentUserId,
+    { $addToSet: { sharedPosts: postId } },
+    { new: true }
+  );
+
+  // Increment the totalShared field in the Post document
+  const post = await Posts.findByIdAndUpdate(
+    postId,
+    { $inc: { totalShared: 1 } },
+    { new: true }
+  );
+
+  if (!user || !post) {
+    throw new Error('User or Post not found');
+  }
+
+  return {
+    user,
+    post,
+  };
+};
+
 
 
 export const UserServices = {
@@ -176,4 +221,5 @@ export const UserServices = {
   sendFriendRequest,
   acceptFriendRequest,
   declineFriendRequest,
+  sharePost,
 };

@@ -167,6 +167,19 @@ const declineFriendRequest = catchAsync(async (req, res) => {
   });
 });
 
+const sharePost = catchAsync(async (req, res) => {
+  const currentUserId = req.user.userId;
+  const { postId } = req.params;
+
+  const result = await UserServices.sharePost(currentUserId, postId);
+  sendResponse(res, {
+    statusCode: httpStatus.OK,
+    success: true,
+    message: 'Post shared successfully',
+    data: result,
+  });
+});
+
 
 export const UserControllers = {
   getAllUser,
@@ -182,4 +195,5 @@ export const UserControllers = {
   sendFriendRequest,
   acceptFriendRequest,
   declineFriendRequest,
+  sharePost,
 };
